@@ -136,4 +136,62 @@
   \caption{نمودار ER مربوط به پروژه}
   \label{fig:er}
 \end{figure}
+
+\section*{طراحی منطقی}
+\subsection*{دامنه صفات}
+صفات پروژه به همراه توضیحات دامنه آنها در زیر آمده است: 
+\begin{itemize}
+\item User
+	\begin{itemize}
+	\item email
+	\item nickname
+	\item password
+	\item pic\_url
+	\item last\_activity
+	\end{itemize}
+\item Comment
+	\begin{itemize}
+	\item text
+	\item time
+	\end{itemize}
+\item Task
+	\begin{itemize}
+	\item id
+	\item title
+	\item starred
+	\item description
+	\item resource\_url
+	\item tag
+	\item predicted\_time
+	\item real\_time
+	\item predicted\_duration
+	\item real\_duration
+	\item deadline
+	\end{itemize}
+\item SubTask
+	\begin{itemize}
+	\item title
+	\item done
+	\end{itemize}
+\item Folder
+	\begin{itemize}
+	\item path
+	\item time
+	\item activity	
+		\begin{itemize}
+		\item time
+		\item message
+		\end{itemize}
+	\end{itemize}
+\item Reminder
+	\begin{itemize}
+	\item notify
+	\item send\_email
+	\item time
+	\end{itemize}
+\item Role
+	\begin{itemize}
+	\item name
+	\end{itemize}
+\end{itemize}
 \end{document}
