@@ -141,23 +141,34 @@
 \subsection*{دامنه صفات}
 صفات پروژه به همراه توضیحات دامنه آنها در زیر آمده است: 
 \begin{itemize}
-\item User
+\item \textbf{User}
+
 	\begin{itemize}
-	\item \lr{:email}
 	
-	\item nickname
-	این صفت از جنس VARCHAR تعریف می‌شود و محدودیت خاصی به جز اندازه ندارد. البته این صفت هیچ‌مقدار‌ناپذیر نیز هست.
+	\item :email
 	
-	\item password
-	\item pic\_url
-	\item last\_activity
+	\item :nickname
+	این صفت از جنس VARCHAR و با طول حداکثر ۳۲ تعریف می‌شود و محدودیت خاصی به جز اندازه ندارد. ای البته این صفت هیچ‌مقدار‌ناپذیر نیز هست.
+	
+	\item :password
+	این صفت از جنس CHAR و با طول ۳۲ تعریف می‌شود و هیچ‌مقدار‌ناپذیر است.
+	
+	\item :pic\_url
+	این صفت از جنس VARCHAR و با طول حداکثر ۵۱۲ است و هیچ‌مقدار‌ناپذیر نیز هست. هم‌چنین آدرس یک عکس پروفایل ساده به عنوان مقدار پیش‌فرض این فیلد در نظر گرفته‌شده است.
+	
+	\item :last\_activity
+	این صفت از جنس زمان است و هیچ‌مقدار ناپذیر.
 	\end{itemize}
-\item Comment
+	
+\item \textbf{Comment}
+
 	\begin{itemize}
 	\item text
 	\item time
 	\end{itemize}
-\item Task
+	
+\item \textbf{Task}
+
 	\begin{itemize}
 	\item id
 	\item title
@@ -171,11 +182,14 @@
 	\item real\_duration
 	\item deadline
 	\end{itemize}
-\item SubTask
+	
+\item \textbf{SubTask}
+
 	\begin{itemize}
 	\item title
 	\item done
 	\end{itemize}
+	
 \item Folder
 	\begin{itemize}
 	\item path
