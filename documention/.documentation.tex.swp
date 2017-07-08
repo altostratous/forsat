@@ -179,7 +179,9 @@
 	\item predicted\_time
 	\item real\_time
 	\item predicted\_duration
+	: ترجیح بر آن شد که به جای ذخیره مدت زمان زمان پایان را با عنوان predicted\_end\_time ذخیره کنیم. 
 	\item real\_duration
+	: ترجیح بر آن شد که به جای ذخیره مدت زمان زمان پایان را با عنوان real\_end\_time ذخیره کنیم. 
 	\item deadline
 	\end{itemize}
 	
