@@ -9,7 +9,7 @@ CREATE DOMAIN password_domain CHAR(32) NOT NULL;
 
 CREATE DOMAIN url_domain VARCHAR(512) NULL;
 
-CREATE DOMAIN resource_url url_domain;
+CREATE DOMAIN resource_url_domain url_domain;
 
 CREATE DOMAIN pic_url_domain url_domain NOT NULL
   DEFAULT 'http://www.gravatar.com/avatar/00095965ca2e9b81c365d541b9cc73ec?s=40&d=identicon';
@@ -24,11 +24,5 @@ CREATE DOMAIN comment_text_domain text_domain NOT NULL;
 
 CREATE DOMAIN title_domain VARCHAR(1024) NOT NULL;
 
-CREATE TYPE activity_type AS (
-  activity_message  comment_text_domain,
-  activity_time     log_time_domain
-);
-
 CREATE DOMAIN path_domain url_domain
   CHECK (VALUE ~* '^(/[[:space:]A-Za-z0-9._%-]+)+$');
-
