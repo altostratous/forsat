@@ -161,7 +161,9 @@
 	: همان url\_domain است. 
 	\item
 	pic\_url\_domain
-	: همان url\_domain است با این تفاوت که هیچمقدار نا پذیر است و یک مقدار پیشفرض \LTRfootenote{http://www.gravatar.com/avatar/00095965ca2e9b81c365d541b9cc73ec?s=40&d=identicon} برای آن در نظر گرفتیم. 
+	: همان url\_domain است با این تفاوت که هیچمقدار نا پذیر است و یک مقدار پیشفرض LTRfootnote{
+	http://www.gravatar.com/avatar/00095965ca2e9b81c365d541b9cc73ec?s=40\&d=identicon
+	} برای آن در نظر گرفتیم. 
 	\item
 	time\_setting\_domain
 	: برای نگهداری داده‌های زمانی هیچ مقدار پذیر از این دامنه استفاده خواهیم کرد و جنس آن را از TIME قرار دادیم. 
@@ -184,77 +186,75 @@
 	auto\_increment\_domain
 	: این دامنه همان INTEGER سیستم مدیریت داده postgres است. این دامنه را برای آن لحاظ کردیم که در صورتی که در آینده و در فاز نگهداری سیستم نیاز به تغییر در کل صفات از این نوع شد بتوان یکجا تغییرات را اعمال کرد. 
 \end{itemize}
+صفات طراحی اولیه رابطه‌ها در زیر آمده اند. نامگذاری صفات در این مرحله تا حدودی تغییر یافت تا اولا با نامهای رزرو شده سامانه مدیریت داده‌مان تداخل نکند و ثانیا معنی را بهتر برساند. 
+\latin
 \begin{itemize}
 \item \textbf{User}
 
 	\begin{itemize}
 	
-	\item :email
+	\item email\_domain::email
 	
-	\item :nickname
+	\item nickname\_domain::nickname
 	
+	\item password\_domain::password
 	
-	\item :password
-	این صفت از جنس CHAR و با طول ۳۲ تعریف می‌شود و هیچ‌مقدار‌ناپذیر است.
+	\item pic\_url\_domain::pic\_url
 	
-	\item :pic\_url
-	این صفت از جنس VARCHAR و با طول حداکثر ۵۱۲ است و هیچ‌مقدار‌ناپذیر نیز هست. هم‌چنین آدرس یک عکس پروفایل ساده به عنوان مقدار پیش‌فرض این فیلد در نظر گرفته‌شده است.
-	
-	\item :last\_activity
-	این صفت از جنس زمان است و هیچ‌مقدار ناپذیر.
+	\item log\_time\_domain::last\_activity
 	\end{itemize}
 	
 \item \textbf{Comment}
 
 	\begin{itemize}
-	\item text
-	\item time
+	\item comment\_text\_domain::text
+	\item log\_time\_domain::time
 	\end{itemize}
 	
 \item \textbf{Task}
 
 	\begin{itemize}
-	\item id
-	\item title
-	\item starred
-	\item description
-	\item resource\_url
-	\item tag
-	\item predicted\_time
-	\item real\_time
-	\item predicted\_duration
-	: ترجیح بر آن شد که به جای ذخیره مدت زمان زمان پایان را با عنوان predicted\_end\_time ذخیره کنیم. 
-	\item real\_duration
-	: ترجیح بر آن شد که به جای ذخیره مدت زمان زمان پایان را با عنوان real\_end\_time ذخیره کنیم. 
-	\item deadline
+	\item auto\_increment\_domain::id
+	\item title\_domain::title
+	\item boolean\_domain::starred
+	\item text\_domain::description
+	\item resource\_domain::resource\_url
+	\item label\_domain::tag
+	\item time\_setting\_domain::predicted\_time
+	\item time\_setting\_domain::real\_time
+	\item time\_setting\_domain::predicted\_end\_time
+	\item time\_setting\_domain::real\_end\_time
+	\item time\_setting\_domain::deadline
 	\end{itemize}
 	
 \item \textbf{SubTask}
 
 	\begin{itemize}
-	\item title
-	\item done
+	\item title\_domain::title
+	\item boolean\_domain::done
 	\end{itemize}
 	
 \item Folder
 	\begin{itemize}
-	\item path
+	\item path\_domain::path
 	\item activity	
 		\begin{itemize}
-		\item time
-		\item message
+		\item log\_time\_domain::time
+		\item comment\_text\_domain::message
 		\end{itemize}
 	\end{itemize}
 \item Reminder
 	\begin{itemize}
-	\item notify
-	\item send\_email
-	\item time
+	\item boolean\_domain::notify
+	\item boolean\_domain::send\_email
+	\item time\_setting\_domain::time
 	\end{itemize}
 \item Role
 	\begin{itemize}
-	\item name
+	\item label\_domain::name
 	\end{itemize}
 \end{itemize}
-نامگذاری صفات در این مرحله تا حدودی تغییر یافت تا اولا با نامهای رزرو شده سامانه مدیریت داده‌مان تداخل نکند و ثانیا معنی را بهتر برساند. 
+\persian
+ترجیح بر آن شد که به جای ذخیره مدت زمان (predicted\_duration) زمان پایان را با عنوان predicted\_end\_time ذخیره کنیم. 
+ترجیح بر آن شد که به جای ذخیره مدت زمان (real\_duration) زمان پایان را با عنوان real\_end\_time ذخیره کنیم. 
 \end{document}
