@@ -26,3 +26,7 @@ CREATE DOMAIN title_domain VARCHAR(1024) NOT NULL;
 
 CREATE DOMAIN path_domain url_domain
   CHECK (VALUE ~* '^(/[[:space:]A-Za-z0-9._%-]+)+$');
+
+CREATE DOMAIN boolean_domain BOOLEAN NOT NULL;
+
+CREATE DOMAIN auto_increment_domain INTEGER;
