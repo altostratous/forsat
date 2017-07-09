@@ -8,15 +8,94 @@ CREATE TABLE "User"(
 );
 
 CREATE TABLE Task(
-  id
+  id SERIAL,
+  title title_domain,
+  starred boolean_domain,
+  description text_domain,
+  predicted_time time_setting_domain,
+  real_time time_setting_domain,
+  predicted_end_time time_setting_domain,
+  real_end_time time_setting_domain,
+  deadline time_setting_domain,
+  email email_domain,
+  path path_domain,
+  recurrence_of_id recurrence_id_domain,
+  PRIMARY KEY (id),
+  FOREIGN KEY (email,path) REFERENCES List,
+  FOREIGN KEY (recurrence_of_id) REFERENCES Task
+);
+
+CREATE TABLE ResourceURLs(
+  id id_domain,
+  resource_url resource_url_domain,
+  FOREIGN KEY (id) REFERENCES Task,
+  PRIMARY KEY (id,resource_url)
+);
+
+CREATE TABLE TaskTags(
+  tag label_domain,
+  id id_domain,
+  FOREIGN KEY (id) REFERENCES Task,
+  PRIMARY KEY (id,tag)
 );
 
 CREATE TABLE Comment(
   text  comment_text_domain,
   time  log_time_domain,
   email email_domain,
+  id id_domain,
+  replied_to_time log_time_domain,
+  replied_to_email email_domain,
   FOREIGN KEY (email) REFERENCES "User",
-  PRIMARY KEY (email, time)
+  FOREIGN KEY (id) REFERENCES Task,
+  FOREIGN KEY (time,email,id) REFERENCES Comment,
+  PRIMARY KEY (email, time, id)
 );
 
-CREATE TABLE
+CREATE TABLE Subtask(
+  id id_domain,
+  title title_domain,
+  FOREIGN KEY (id) REFERENCES Task,
+  PRIMARY KEY (id,title)
+);
+
+CREATE TABLE Folder(
+  path path_domain,
+  email email_domain,
+  child_of_path path_domain,
+  FOREIGN KEY (email) REFERENCES "User",
+  FOREIGN KEY (child_of_path,email) REFERENCES Folder,
+  PRIMARY KEY (path,email)
+);
+
+CREATE TABLE FolderActivities(
+  path path_domain,
+  email email_domain,
+  time log_time_domain,
+  message comment_text_domain,
+  FOREIGN KEY (path,email) REFERENCES Folder,
+  PRIMARY KEY (path,email,time,message)
+);
+
+CREATE TABLE List(
+  path path_domain,
+  email email_domain,
+  FOREIGN KEY (path,email) REFERENCES Folder,
+  PRIMARY KEY (path,email)
+);
+
+CREATE TABLE Reminder(
+  time time_setting_domain,
+  id id_domain,
+  send_email boolean_domain,
+  notify boolean_domain,
+  FOREIGN KEY (id) REFERENCES Task,
+  PRIMARY KEY (id,time)
+);
+
+CREATE TABLE Role(
+  email email_domain,
+  name label_domain,
+  FOREIGN KEY (email) REFERENCES "User",
+  PRIMARY KEY (email,name)
+);

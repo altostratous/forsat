@@ -29,4 +29,8 @@ CREATE DOMAIN path_domain url_domain
 
 CREATE DOMAIN boolean_domain BOOLEAN NOT NULL;
 
-CREATE DOMAIN auto_increment_domain INTEGER;
+CREATE DOMAIN recurrence_id_domain INTEGER NULL;
+
+CREATE DOMAIN id_domain INTEGER NOT NULL;
+
+CREATE DOMAIN resource_url_domain  url_domain NOT NULL;
