@@ -44,14 +44,17 @@ PREPARE delete_folder_for_user(email_domain, path_domain, path_domain) AS
   DELETE FROM folder WHERE email = $1 AND path = $2 AND child_of_path = $3;
 -- Not tested yet --
 
+CREATE FUNCTION create_list_for_user(email email_domain, parent_path path_domain, path path_domain) RETURNS VOID AS $create_list_for_user$
+BEGIN
+  INSERT INTO folder VALUES (path, email, parent_path);
+  INSERT INTO list VALUES (path, email);
+END;
+$create_list_for_user$ LANGUAGE plpgsql;
 
-
-PREPARE create_list_for_user(email_domain, path_domain, path_domain) AS
-  INSERT INTO list VALUES ($2, $1, $3);
 -- TODO: Creating trigger for inserting values into Folder table --
-EXECUTE create_list_for_user('aliasgarikh@yahoo.com', '/University/Semester4/CA', '/University/Semester4');
+SELECT create_list_for_user('aliasgarikh@yahoo.com', '/University/Semester4/CA', '/University/Semester4');
 
-
+ALTER TABLE list DROP COLUMN folder_path;
 
 PREPARE move_list_for_user(email_domain, path_domain, path_domain, path_domain) AS
   UPDATE list SET path = $3, folder_path = $4 WHERE email = $1 AND path = $2;
