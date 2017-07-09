@@ -9,7 +9,7 @@ CREATE DOMAIN password_domain CHAR(32) NOT NULL;
 
 CREATE DOMAIN url_domain VARCHAR(512) NULL;
 
-CREATE DOMAIN resource_url_domain url_domain;
+CREATE DOMAIN resource_url_domain url_domain NOT NULL;
 
 CREATE DOMAIN pic_url_domain url_domain NOT NULL
   DEFAULT 'http://www.gravatar.com/avatar/00095965ca2e9b81c365d541b9cc73ec?s=40&d=identicon';
@@ -32,5 +32,3 @@ CREATE DOMAIN boolean_domain BOOLEAN NOT NULL;
 CREATE DOMAIN recurrence_id_domain INTEGER NULL;
 
 CREATE DOMAIN id_domain INTEGER NOT NULL;
-
-CREATE DOMAIN resource_url_domain  url_domain NOT NULL;
