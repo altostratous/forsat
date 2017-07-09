@@ -31,10 +31,16 @@ CREATE TABLE FolderActivities(
   PRIMARY KEY (path,email,time,message)
 );
 
+drop TABLE List;
+
 CREATE TABLE List(
   path path_domain,
   email email_domain,
+  folder_path path_domain,
   FOREIGN KEY (path,email) REFERENCES Folder
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  FOREIGN KEY (folder_path,email) REFERENCES Folder
     ON UPDATE CASCADE
     ON DELETE CASCADE,
   PRIMARY KEY (path,email)
