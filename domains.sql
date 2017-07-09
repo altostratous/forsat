@@ -14,9 +14,9 @@ CREATE DOMAIN resource_url_domain url_domain NOT NULL;
 CREATE DOMAIN pic_url_domain url_domain NOT NULL
   DEFAULT 'http://www.gravatar.com/avatar/00095965ca2e9b81c365d541b9cc73ec?s=40&d=identicon';
 
-CREATE DOMAIN time_setting_domain TIME NULL;
+CREATE DOMAIN time_setting_domain TIMESTAMP NULL;
 
-CREATE DOMAIN log_time_domain TIME NOT NULL;
+CREATE DOMAIN log_time_domain TIMESTAMP NOT NULL;
 
 CREATE DOMAIN text_domain VARCHAR(8192) NULL;
 
@@ -32,3 +32,5 @@ CREATE DOMAIN boolean_domain BOOLEAN NOT NULL;
 CREATE DOMAIN recurrence_id_domain INTEGER NULL;
 
 CREATE DOMAIN id_domain INTEGER NOT NULL;
+
+CREATE DOMAIN duration_domain INTERVAL;
