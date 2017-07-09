@@ -1,3 +1,13 @@
+CREATE FUNCTION validate_parent_path() RETURNS TRIGGER AS
+  BEGIN
+  END
+
+CREATE TRIGGER parent_path_validity
+  BEFORE UPDATE OF path ON Folder
+  FOR EACH ROW
+  WHEN (NOT new.path LIKE (SELECT path FROM Folder WHERE path = new.child_of_path) || '%')
+
+
 CREATE ASSERTION parent_path_validity CHECK (
   NOT EXISTS (
     SELECT * FROM Folder JOIN Folder AS Parent
