@@ -188,8 +188,11 @@
 	\item
 	id\_domain
 	: این دامنه همان INTEGER سیستم مدیریت داده postgres است که آن را هیچمقدارناپذیر قرار دادیم. این دامنه را برای آن لحاظ کردیم که در صورتی که در آینده و در فاز نگهداری سیستم نیاز به تغییر در کل صفات از این نوع شد بتوان یکجا تغییرات را اعمال کرد. 
+	\item
+	duration\_domain
+	: از این دامنه برای نگهداری مدتهای زمانی استفاده کردیم و از نوع INTERVAL قرارش دادیم. 
 \end{itemize}
-صفات طراحی اولیه رابطه‌ها در زیر آمده اند. نامگذاری صفات در این مرحله تا حدودی تغییر یافت تا اولا با نامهای رزرو شده سامانه مدیریت داده‌مان تداخل نکند و ثانیا معنی را بهتر برساند. 
+صفات طراحی اولیه رابطه‌ها در زیر آمده اند.
 \latin
 \begin{itemize}
 \item \textbf{User}
@@ -225,8 +228,8 @@
 	\item label\_domain::tag
 	\item time\_setting\_domain::predicted\_time
 	\item time\_setting\_domain::real\_time
-	\item time\_setting\_domain::predicted\_end\_time
-	\item time\_setting\_domain::real\_end\_time
+	\item time\_setting\_domain::predicted\_duration
+	\item time\_setting\_domain::real\_duration
 	\item time\_setting\_domain::deadline
 	\end{itemize}
 	
@@ -258,8 +261,6 @@
 	\end{itemize}
 \end{itemize}
 \persian
-ترجیح بر آن شد که به جای ذخیره مدت زمان (predicted\_duration) زمان پایان را با عنوان predicted\_end\_time ذخیره کنیم. 
-ترجیح بر آن شد که به جای ذخیره مدت زمان (real\_duration) زمان پایان را با عنوان real\_end\_time ذخیره کنیم. 
 \subsection*{جامعیت}
 علاوه بر محدودیتهای عام $C_1 $و $ C_2$محدودیتهای خاصی در سامانه ما برقرار بود که شامل موارد زیر هستند:
 \subsubsection*{محدودیت دامنه‌ای}
@@ -292,7 +293,7 @@
 محدودیتهای پایگاهی از این قرارند:
 \begin{itemize}
 \item
-زمان یادآور باید پیش از زمان تخمینی کار و زمان واقعی کار باشد. 
+زمان یادآور باید پیش از زمان تخمینی پایان کار و زمان واقعی پایان کار باشد. 
 \end{itemize}
 \section*{نرمال‌سازی جداول}
 
@@ -341,6 +342,8 @@
 محدودیتهایی که در کلیدها و دامنه‌ها لحاظ نشده‌اند را می‌توان با اظهار یا رهانا پیاده سازی کرد که در در زیر نوشته شده است:
 
 \begin{figure}[hbt!]
-  \includegraphics[width =1.35 \textwidth]{assertions.jpg}
+  \includegraphics[width =1.35 \textwidth]{assertions}
 \end{figure}
+ همین محدودیتها را می‌توان با رهانا به صورت زیر پیاده سازی کرد:
+ 
 \end{document}
