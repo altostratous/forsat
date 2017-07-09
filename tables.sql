@@ -84,15 +84,12 @@ CREATE TABLE TaskTags(
   PRIMARY KEY (id,tag)
 );
 
-ALTER TABLE Comment
-    ALTER COLUMN replied_to_time TYPE time_setting_domain;
-
 CREATE TABLE Comment(
   text  comment_text_domain,
   time  log_time_domain,
   email email_domain,
   id id_domain,
-  replied_to_time log_time_domain,
+  replied_to_time time_setting_domain,
   replied_to_email email_domain,
   FOREIGN KEY (email) REFERENCES "User"
     ON UPDATE CASCADE

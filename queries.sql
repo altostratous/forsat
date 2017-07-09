@@ -219,5 +219,45 @@ PREPARE delete_comment_under_task(id_domain, time_setting_domain) AS
 
 -- TODO: Check that the person which is deleting comment is the person who wrote it or admin or owner --
 
+PREPARE add_resource_for_task(id_domain, resource_url_domain) AS
+  INSERT INTO resourceurls VALUES ($1, $2);
+PREPARE edit_resource_for_task(id_domain, resource_url_domain, id_domain, resource_url_domain) AS
+  UPDATE resourceurls SET id = $3, resource_url = $4 WHERE id = $1 AND resource_url = $2;
+PREPARE delete_resources_for_task(id_domain, resource_url_domain) AS
+  DELETE FROM resourceurls WHERE id = $1 AND resource_url = $2;
+
+
+
+PREPARE add_tag_for_task(id_domain, label_domain) AS
+  INSERT INTO tasktags VALUES ($2, $1);
+PREPARE edit_tag_for_task(id_domain, label_domain, id_domain, label_domain) AS
+  UPDATE tasktags SET id = $3, tag = $4 WHERE id = $1 AND tag = $2;
+PREPARE delete_tag_for_task(id_domain, label_domain) AS
+  DELETE FROM tasktags WHERE id = $1 AND tag = $2;
+
+
+
+PREPARE get_tasks_of_a_folder(email_domain, path_domain) AS
+  SELECT * FROM task
+    WHERE email = $1 AND path LIKE $2 || '%';
+-- Tests --
+EXECUTE get_tasks_of_a_folder('aliasgarikh@yahoo.com', '/University');
+
+
+
+PREPARE get_tasks_of_a_list(email_domain, path_domain) AS
+  SELECT * FROM task
+    WHERE email = $1 AND path = $2;
+
+
+
+PREPARE get_tasks_with_tag(label_domain) AS
+  SELECT * FROM task AS t1
+    WHERE exists(SELECT * FROM tasktags AS t2
+                  WHERE t2.id = t1.id AND tag = $1);
+
+
+
+
 
 
