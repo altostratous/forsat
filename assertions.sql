@@ -5,18 +5,6 @@ CREATE ASSERTION parent_path_validity CHECK (
   )
 )
 
-CREATE ASSERTION predicted_end_time_validity CHECK (
-  NOT EXISTS (
-    SELECT * FROM Task WHERE real_duration > 0
-  )
-)
-
-CREATE ASSERTION predicted_end_time_validity CHECK (
-  NOT EXISTS (
-    SELECT * FROM Task WHERE predicted_duration > 0
-  )
-)
-
 CREATE ASSERTION reminder_time_validity CHECK (
   NOT EXISTS (
     SELECT * FROM Reminder JOIN Task WHERE
