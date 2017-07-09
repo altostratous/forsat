@@ -307,7 +307,7 @@
 \end{itemize}
 \begin{figure}[H]
   \centering  
-  \includegraphics[width = 0.85\textwidth]{Fucntional_Dependancy.png}
+  \includegraphics[width = 0.85\textwidth]{fucntional_dependancy.png}
   \caption{نمودار وابستگی‌های تابعی اولیه}
   \label{fig:fd1}
 \end{figure}
@@ -316,7 +316,7 @@
 
 \begin{figure}[H]
   \centering  
-  \includegraphics[width = 0.8\textwidth]{Fucntional_Dependancy2.png}
+  \includegraphics[width = 0.8\textwidth]{fucntional_dependancy2.png}
   \caption{نمودار وابستگی‌های تابعی نهایی}
   \label{fig:fd}
 \end{figure}
