@@ -1,7 +1,3 @@
-DEALLOCATE PREPARE move_folder;
-
-
-
 PREPARE registration(email_domain, nickname_domain, password_domain, pic_url_domain) AS
   INSERT INTO "User" VALUES ($1, $2, $3, $4, current_timestamp);
 -- Tests --
@@ -52,7 +48,8 @@ END;
 $create_list_for_user$ LANGUAGE plpgsql;
 
 -- TODO: Creating trigger for inserting values into Folder table --
-SELECT create_list_for_user('aliasgarikh@yahoo.com', '/University/Semester4/CA', '/University/Semester4');
+EXECUTE create_folder_for_user ('aliasgarikh@yahoo.com', '/University/Semester4', NULL);
+SELECT create_list_for_user('aliasgarikh@yahoo.com', '/University/Semester4', '/University/Semester4/CA');
 
 ALTER TABLE list DROP COLUMN folder_path;
 
