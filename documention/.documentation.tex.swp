@@ -1,5 +1,6 @@
 \documentclass{article}
 
+\usepackage{float}
 \usepackage{xepersian}
 
 \settextfont{XB Zar}
@@ -67,7 +68,7 @@
 
 \item کاربر( یا کاربرها در فهرست‌های اشتراکی) می‌تواند زیر هر وظیفه‌ نظر‌اتی بگذارد.
 
-\item کاربر یک زمان پیش‌بینی شده برای هر وظیفه تعیین می‌کند و در هنگان انجام آن وظیفه با استفاده از زمان‌سنج برنامه زمان واقعی انجام وظیفه را اندازه‌گیری می‌کند.
+\item کاربر یک زمان پیش‌بینی شده برای هر وظیفه تعیین می‌کند و در هنگام انجام آن وظیفه با استفاده از زمان‌سنج برنامه زمان واقعی انجام وظیفه را اندازه‌گیری می‌کند.
 
 \item کاربر برای هر وظیفه یک مهلت نهایی و زمان انجام تعریف می‌کند که تعیین هر دوی این موارد در زمان تعریف وظابف اختیاری است.
 
@@ -138,79 +139,178 @@
 \end{figure}
 
 \section*{طراحی منطقی}
-\subsection*{دامنه صفات}
-صفات پروژه به همراه توضیحات دامنه آنها در زیر آمده است: 
+\subsection*{دامنه صفات} \label{sect:domains}
+با توجه به کلیات پروژه و صفات‌ها دامنه‌ها و انواع زیر را برای پایگاه داده در نظر گرفتیم:
+\begin{itemize}
+	\item
+	email\_domain
+	: محدودیتهای استاندارد ایمیل را با استفاده از امکان عبارت منظم در postgres پیاده‌سازی کردیم. 
+	\item
+	label\_domain
+	: این دامنه عبارت‌های کوتاه و برچسبهاست. این دامنه از جنس VARCHAR و با طول حداکثر ۳۲ تعریف می‌شود و محدودیت خاصی به جز اندازه ندارد.
+	\item
+	nickname\_domain
+	: همان label\_domain است. 
+	\item
+	password\_domain
+	: با توجه به این که برای گذرواژه از الگوریتم درهمسازی md5 استفاده خواهد شد، آن را از جنس CHAR  32 بیت تعیین کردیم. 
+	\item
+	url\_domain
+	: این دامنه را از جنس VARCHAR و حداکثر به طول 512 تعیین کردیم. 
+	\item
+	resource\_url\_domain
+	: همان url\_domain است. 
+	\item
+	pic\_url\_domain
+	: همان url\_domain است با این تفاوت که هیچمقدار نا پذیر است و یک مقدار پیشفرض \LTRfootnote{	http://www.gravatar.com/avatar/00095965ca2e9b81c365d541b9cc73ec?s=40\&d=identicon
+	} برای آن در نظر گرفتیم. 
+	\item
+	time\_setting\_domain
+	: برای نگهداری داده‌های زمانی هیچ مقدار پذیر از این دامنه استفاده خواهیم کرد و جنس آن را از TIME قرار دادیم. 
+	\item
+	log\_time\_domain
+	: برای ذخیره زمان اتفاقاتی که افتاده‌اند از قبیل زمان ارسال یک نظر و یا فعالیت از آن استفاده می‌کنیم. از جنس TIME و هیچمقدارناپذیر است. 
+	\item
+	text\_domain
+	: برای ذخیره مقدارهای هیچمقدارپذیر متنی مانند توضیحات کارها از این دامنه استفاده کردیم. از نوع VARCHAR و به طول حداکثر 8192 است.
+	\item
+	comment\_text\_domain
+	: برای دامنه نظرات از این دامنه استفاده خواهیم کرد که مشابه text\_domain است با این تفاوت که هیچ‌مقدارناپذیر است. 
+	\item
+	title\_domain
+	: برای عنوانها این دامنه را در نظر گرفتیم که از نوع VARCHAR و به طول حداکثر 1024 است. عنوانها را هیچمقدارناپذیر در نظر گرفتیم. 
+	\item
+	boolean\_domain
+	: این دامنه همان BOOLEAN سیستم مدیریت داده postgres به صورت هیچ مقدار ناپدیر است. این دامنه را برای آن لحاظ کردیم که در صورتی که در آینده و در فاز نگهداری سیستم نیاز به تغییر در کل صفات از این نوع شد بتوان یکجا تغییرات را اعمال کرد. 
+	\item
+	auto\_increment\_domain
+	: این دامنه همان INTEGER سیستم مدیریت داده postgres است. این دامنه را برای آن لحاظ کردیم که در صورتی که در آینده و در فاز نگهداری سیستم نیاز به تغییر در کل صفات از این نوع شد بتوان یکجا تغییرات را اعمال کرد. 
+\end{itemize}
+صفات طراحی اولیه رابطه‌ها در زیر آمده اند. نامگذاری صفات در این مرحله تا حدودی تغییر یافت تا اولا با نامهای رزرو شده سامانه مدیریت داده‌مان تداخل نکند و ثانیا معنی را بهتر برساند. 
+\latin
 \begin{itemize}
 \item \textbf{User}
 
 	\begin{itemize}
 	
-	\item :email
+	\item email\_domain::email
 	
-	\item :nickname
-	این صفت از جنس VARCHAR و با طول حداکثر ۳۲ تعریف می‌شود و محدودیت خاصی به جز اندازه ندارد. ای البته این صفت هیچ‌مقدار‌ناپذیر نیز هست.
+	\item nickname\_domain::nickname
 	
-	\item :password
-	این صفت از جنس CHAR و با طول ۳۲ تعریف می‌شود و هیچ‌مقدار‌ناپذیر است.
+	\item password\_domain::password
 	
-	\item :pic\_url
-	این صفت از جنس VARCHAR و با طول حداکثر ۵۱۲ است و هیچ‌مقدار‌ناپذیر نیز هست. هم‌چنین آدرس یک عکس پروفایل ساده به عنوان مقدار پیش‌فرض این فیلد در نظر گرفته‌شده است.
+	\item pic\_url\_domain::pic\_url
 	
-	\item :last\_activity
-	این صفت از جنس زمان است و هیچ‌مقدار ناپذیر.
+	\item log\_time\_domain::last\_activity
 	\end{itemize}
 	
 \item \textbf{Comment}
 
 	\begin{itemize}
-	\item text
-	\item time
+	\item comment\_text\_domain::text
+	\item log\_time\_domain::time
 	\end{itemize}
 	
 \item \textbf{Task}
 
 	\begin{itemize}
-	\item id
-	\item title
-	\item starred
-	\item description
-	\item resource\_url
-	\item tag
-	\item predicted\_time
-	\item real\_time
-	\item predicted\_duration
-	: ترجیح بر آن شد که به جای ذخیره مدت زمان زمان پایان را با عنوان predicted\_end\_time ذخیره کنیم. 
-	\item real\_duration
-	: ترجیح بر آن شد که به جای ذخیره مدت زمان زمان پایان را با عنوان real\_end\_time ذخیره کنیم. 
-	\item deadline
+	\item auto\_increment\_domain::id
+	\item title\_domain::title
+	\item boolean\_domain::starred
+	\item text\_domain::description
+	\item resource\_domain::resource\_url
+	\item label\_domain::tag
+	\item time\_setting\_domain::predicted\_time
+	\item time\_setting\_domain::real\_time
+	\item time\_setting\_domain::predicted\_end\_time
+	\item time\_setting\_domain::real\_end\_time
+	\item time\_setting\_domain::deadline
 	\end{itemize}
 	
 \item \textbf{SubTask}
 
 	\begin{itemize}
-	\item title
-	\item done
+	\item title\_domain::title
+	\item boolean\_domain::done
 	\end{itemize}
 	
 \item Folder
 	\begin{itemize}
-	\item path
-	\item time
+	\item path\_domain::path
 	\item activity	
 		\begin{itemize}
-		\item time
-		\item message
+		\item log\_time\_domain::time
+		\item comment\_text\_domain::message
 		\end{itemize}
 	\end{itemize}
 \item Reminder
 	\begin{itemize}
-	\item notify
-	\item send\_email
-	\item time
+	\item boolean\_domain::notify
+	\item boolean\_domain::send\_email
+	\item time\_setting\_domain::time
 	\end{itemize}
 \item Role
 	\begin{itemize}
-	\item name
+	\item label\_domain::name
 	\end{itemize}
 \end{itemize}
+\persian
+ترجیح بر آن شد که به جای ذخیره مدت زمان (predicted\_duration) زمان پایان را با عنوان predicted\_end\_time ذخیره کنیم. 
+ترجیح بر آن شد که به جای ذخیره مدت زمان (real\_duration) زمان پایان را با عنوان real\_end\_time ذخیره کنیم. 
+\subsection*{جامعیت}
+علاوه بر محدودیتهای عام $C_1 $و $ C_2$محدودیتهای خاصی در سامانه ما برقرار بود که شامل موارد زیر هستند:
+\subsubsection*{محدودیت دامنه‌ای}
+در بخش 
+\ref{sect:domains}
+توضیح داده‌شد.
+\subsubsection*{محدودیت‌های صفتی}
+با اتخاذ دامنه‌های مخصوص صفات این محدودیت‌ها را در دامنه‌ها لحاظ کردیم.
+\subsubsection*{محدودیت‌های رابطه‌ای}
+محدودیتهای رابطه‌ای از این قرارند:
+\begin{itemize}
+\item
+صفت path در رابطه Folder برای فرزندان باید با صفت path مربوط به Folder های پدر شروع شود. 
+\item
+
+\end{itemize}
+\subsubsection*{محدودیت‌های پایگاهی}
+محدودیتهای پایگاهی از این قرارند:
+\begin{itemize}
+\item
+
+\end{itemize}
+
+\section*{نرمال‌سازی جداول}
+
+ابتدا نمودار وابستگی‌های تابعی پایگاه‌داده‌مان را بر اساس طراحی اولیه رسم می‌کنیم و سپس آن را تا حد ممکن نرمال می‌کنیم(شکل \ref{fig:fd1}).
+\\
+می‌بینیم که به غیر از موارد زیر نمودار ما خود‌به‌خود تا فرم نرمال \lr{5NF} هست. مواردی که باید اصلاح شوند، موارد زیر هستند:
+\\
+\begin{itemize}
+
+\item وابستگی تابعی بین صفت
+\lr{replied\_to\_id}
+و صفت
+\lr{id}
+در رابطه نوع موجودیت Comment و نیز مشابه همین موضوع برای صفات
+\lr{child\_of\_email}
+و email در رابطه نوع‌موجودیت Folder . این وابستگی تابعی باعث می‌شود شمای ما حتی به فرم نرمال \lr{2NF} نیز نرسد.
+\\
+برای رفع این مشکل باید صفاتی که در بالا ذکر شده را با یک‌دیگر در یک جدول قرار دهیم، اما نکته‌ای که وجود دارد این است که وابستگی تابعی ذکر شده به این شکل است که مقدار دو صفت با هم برابر خواهد بود فلذا ذخیره کردن این جدول‌ها اهمیتی نخواهد داشت و صرفا صفات
+\lr{replied\_to\_id}
+و
+\lr{child\_of\_email}
+از شمای ما حذف خواهند شد.
+
+\item وابستگی‌های چندمقداری در روابط نوع‌موجودیت‌های Task و Folder که باعث می‌شود شمای ما به فرم نرمال \lr{4NF} نرسد. برای حل این مشکل نیز صفاتی که به کلید اصلی‌مان وابستگی چندمقدار دارند را با کلید اصلی در جدولی جداگانه قرار می‌دهیم.
+
+\end{itemize}
+\begin{figure}[H]
+  \centering  
+  \includegraphics[width = 0.85\textwidth]{Fucntional_Dependancy.png}
+  \caption{نمودار وابستگی‌های تابعی اولیه}
+  \label{fig:fd1}
+\end{figure}
+
+در نهایت نمودار وابستگی‌های تابعی ما به شکل زیر خواهد شد:
 \end{document}
