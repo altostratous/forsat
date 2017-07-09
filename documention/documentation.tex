@@ -138,7 +138,7 @@
 \end{figure}
 
 \section*{طراحی منطقی}
-\subsection*{دامنه صفات}
+\subsection*{دامنه صفات} \label{sect:domains}
 با توجه به کلیات پروژه و صفات‌ها دامنه‌ها و انواع زیر را برای پایگاه داده در نظر گرفتیم:
 \begin{itemize}
 	\item
@@ -161,8 +161,7 @@
 	: همان url\_domain است. 
 	\item
 	pic\_url\_domain
-	: همان url\_domain است با این تفاوت که هیچمقدار نا پذیر است و یک مقدار پیشفرض LTRfootnote{
-	http://www.gravatar.com/avatar/00095965ca2e9b81c365d541b9cc73ec?s=40\&d=identicon
+	: همان url\_domain است با این تفاوت که هیچمقدار نا پذیر است و یک مقدار پیشفرض \LTRfootnote{	http://www.gravatar.com/avatar/00095965ca2e9b81c365d541b9cc73ec?s=40\&d=identicon
 	} برای آن در نظر گرفتیم. 
 	\item
 	time\_setting\_domain
@@ -257,4 +256,26 @@
 \persian
 ترجیح بر آن شد که به جای ذخیره مدت زمان (predicted\_duration) زمان پایان را با عنوان predicted\_end\_time ذخیره کنیم. 
 ترجیح بر آن شد که به جای ذخیره مدت زمان (real\_duration) زمان پایان را با عنوان real\_end\_time ذخیره کنیم. 
+\subsection*{جامعیت}
+علاوه بر محدودیتهای عام $C_1 $و $ C_2$محدودیتهای خاصی در سامانه ما برقرار بود که شامل موارد زیر هستند:
+\subsubsection*{محدودیت دامنه‌ای}
+در بخش 
+\ref{sect:domains}
+توضیح داده‌شد.
+\subsubsection*{محدودیت‌های صفتی}
+با اتخاذ دامنه‌های مخصوص صفات این محدودیت‌ها را در دامنه‌ها لحاظ کردیم.
+\subsubsection*{محدودیت‌های رابطه‌ای}
+محدودیتهای رابطه‌ای از این قرارند:
+\begin{itemize}
+\item
+صفت path در رابطه Folder برای فرزندان باید با صفت path مربوط به Folder های پدر شروع شود. 
+\item
+
+\end{itemize}
+\subsubsection*{محدودیت‌های پایگاهی}
+محدودیتهای پایگاهی از این قرارند:
+\begin{itemize}
+\item
+
+\end{itemize}
 \end{document}
