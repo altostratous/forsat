@@ -60,7 +60,7 @@ CREATE TABLE Task(
   path path_domain,
   recurrence_of_id recurrence_id_domain,
   PRIMARY KEY (id),
-  FOREIGN KEY (email,path) REFERENCES List
+  FOREIGN KEY (path,email) REFERENCES List
     ON UPDATE CASCADE
     ON DELETE CASCADE,
   FOREIGN KEY (recurrence_of_id) REFERENCES Task
