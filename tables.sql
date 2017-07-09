@@ -7,6 +7,31 @@ CREATE TABLE "User"(
   PRIMARY KEY (email)
 );
 
+CREATE TABLE Folder(
+  path path_domain,
+  email email_domain,
+  child_of_path path_domain,
+  FOREIGN KEY (email) REFERENCES "User",
+  FOREIGN KEY (child_of_path,email) REFERENCES Folder,
+  PRIMARY KEY (path,email)
+);
+
+CREATE TABLE FolderActivities(
+  path path_domain,
+  email email_domain,
+  time log_time_domain,
+  message comment_text_domain,
+  FOREIGN KEY (path,email) REFERENCES Folder,
+  PRIMARY KEY (path,email,time,message)
+);
+
+CREATE TABLE List(
+  path path_domain,
+  email email_domain,
+  FOREIGN KEY (path,email) REFERENCES Folder,
+  PRIMARY KEY (path,email)
+);
+
 CREATE TABLE Task(
   id SERIAL,
   title title_domain,
@@ -48,7 +73,7 @@ CREATE TABLE Comment(
   replied_to_email email_domain,
   FOREIGN KEY (email) REFERENCES "User",
   FOREIGN KEY (id) REFERENCES Task,
-  FOREIGN KEY (time,email,id) REFERENCES Comment,
+  FOREIGN KEY (email, time, id) REFERENCES Comment,
   PRIMARY KEY (email, time, id)
 );
 
@@ -57,31 +82,6 @@ CREATE TABLE Subtask(
   title title_domain,
   FOREIGN KEY (id) REFERENCES Task,
   PRIMARY KEY (id,title)
-);
-
-CREATE TABLE Folder(
-  path path_domain,
-  email email_domain,
-  child_of_path path_domain,
-  FOREIGN KEY (email) REFERENCES "User",
-  FOREIGN KEY (child_of_path,email) REFERENCES Folder,
-  PRIMARY KEY (path,email)
-);
-
-CREATE TABLE FolderActivities(
-  path path_domain,
-  email email_domain,
-  time log_time_domain,
-  message comment_text_domain,
-  FOREIGN KEY (path,email) REFERENCES Folder,
-  PRIMARY KEY (path,email,time,message)
-);
-
-CREATE TABLE List(
-  path path_domain,
-  email email_domain,
-  FOREIGN KEY (path,email) REFERENCES Folder,
-  PRIMARY KEY (path,email)
 );
 
 CREATE TABLE Reminder(
