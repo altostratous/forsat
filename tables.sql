@@ -1,7 +1,3 @@
-DROP DATABASE forsat;
-
-drop TABLE "User";
-
 CREATE TABLE "User"(
   email   email_domain,
   nickname nickname_domain,
@@ -51,8 +47,8 @@ CREATE TABLE Task(
   description text_domain,
   predicted_time time_setting_domain,
   real_time time_setting_domain,
-  predicted_end_time time_setting_domain,
-  real_end_time time_setting_domain,
+  predicted_duration duration_domain,
+  real_duration duration_domain,
   deadline time_setting_domain,
   email email_domain,
   path path_domain,
