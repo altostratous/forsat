@@ -143,6 +143,34 @@ PREPARE delete_reminder_for_task(id_domain, time_setting_domain) AS
 
 
 
-PREPARE share_list_with_user(path_domain, email_domain, email_domain, boolean_domain) AS
-  INSERT INTO sharedfolders VALUES($1, $2, )
+PREPARE share_list_with_user(email_domain, email_domain, path_domain, boolean_domain) AS
+  INSERT INTO sharedfolders VALUES($1, $2, $3, $4);
+-- Tests --
+EXECUTE registration('mohammad.alamy@gmail.com', 'MHA', '1968', 'www.avatar');
+EXECUTE share_list_with_user('mohammad.alamy@gmail.com', 'aliasgarikh@yahoo.com', '/University/Semester4/DB', TRUE);
 
+
+
+PREPARE edit_shared_list_with_user(email_domain, email_domain, path_domain, email_domain, path_domain, boolean_domain) AS
+  UPDATE sharedfolders SET user_email = $4, path = $5, is_admin = $6 WHERE user_email = $1 AND owner_email = $2 AND path = $3;
+-- Tests --
+EXECUTE edit_shared_list_with_user('mohammad.alamy@gmail.com', 'aliasgarikh@yahoo.com', '/University/Semester4/DB',
+                                    'mohammad.alamy@gmail.com', '/University/Semester4/DB', FALSE );
+
+
+
+PREPARE unshare_list_with_user(email_domain, email_domain, path_domain) AS
+  DELETE FROM sharedfolders WHERE user_email = $1 AND owner_email = $2 AND path = $3;
+-- Not tested yet --
+
+
+
+PREPARE assign_task_to_user(id_domain, email_domain) AS
+  UPDATE task SET assigned_user_email = $2 WHERE id = $1;
+-- Tests --
+-- TODO: Adding Trigger to check that the change is made by admin or owner(maybe in application level) --
+EXECUTE create_task_in_list('aliasgarikh@yahoo.com', '/University/Semester4/DB', 'Project',
+                            TRUE, 'Course Project', '2017-07-09 20:29:22.743437',
+                            '2017-07-09 22:29:22.743437', '2:00:00', '3:00:00',
+                            '2017-07-10 22:29:22.743437', NULL, 'aliasgarikh@yahoo.com');
+EXECUTE assign_task_to_user(2,'mohammad.alamy@gmail.com');
