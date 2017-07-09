@@ -33,4 +33,4 @@ CREATE DOMAIN recurrence_id_domain INTEGER NULL;
 
 CREATE DOMAIN id_domain INTEGER NOT NULL;
 
-CREATE DOMAIN duration_domain INTERVAL;
+CREATE DOMAIN duration_domain INTERVAL CHECK (VALUE > '00:00:00'::interval);
