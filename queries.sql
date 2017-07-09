@@ -1,7 +1,3 @@
-DEALLOCATE PREPARE move_folder;
-
-
-
 PREPARE registration(email_domain, nickname_domain, password_domain, pic_url_domain) AS
   INSERT INTO "User" VALUES ($1, $2, $3, $4, current_timestamp);
 -- Tests --
@@ -93,6 +89,7 @@ PREPARE edit_task_in_list(id_domain, email_domain, path_domain, title_domain, bo
                   real_duration = $10, deadline = $11, recurrence_of_id = $12, assigned_user_email = $13
   WHERE id = $1;
 -- Tests --
+-- TODO: Edit tasks in
 EXECUTE edit_task_in_list(1, 'aliasgarikh@yahoo.com', '/University/Semester4/DB', 'Assignment3',
                             TRUE, 'Third Assignment', '2017-07-09 20:29:22.743437',
                             '2017-07-09 22:29:22.743437', '2:00:00', '3:00:00',
@@ -152,7 +149,7 @@ PREPARE share_list_with_user(email_domain, email_domain, path_domain, boolean_do
 EXECUTE registration('mohammad.alamy@gmail.com', 'MHA', '1968', 'www.avatar');
 EXECUTE share_list_with_user('mohammad.alamy@gmail.com', 'aliasgarikh@yahoo.com', '/University/Semester4/DB', TRUE);
 
-
+-- TODO: Check the person who is sharing is either owner or admin of list --
 
 PREPARE edit_shared_list_with_user(email_domain, email_domain, path_domain, email_domain, path_domain, boolean_domain) AS
   UPDATE sharedfolders SET user_email = $4, path = $5, is_admin = $6 WHERE user_email = $1 AND owner_email = $2 AND path = $3;
@@ -160,13 +157,14 @@ PREPARE edit_shared_list_with_user(email_domain, email_domain, path_domain, emai
 EXECUTE edit_shared_list_with_user('mohammad.alamy@gmail.com', 'aliasgarikh@yahoo.com', '/University/Semester4/DB',
                                     'mohammad.alamy@gmail.com', '/University/Semester4/DB', FALSE );
 
+-- TODO: Check the person who is editing is either owner or admin of list --
 
-
-PREPARE unshare_list_with_user(email_domain, email_domain, path_domain) AS
+PREPARE remove_user_from_list(email_domain, email_domain, path_domain) AS
   DELETE FROM sharedfolders WHERE user_email = $1 AND owner_email = $2 AND path = $3;
 -- Not tested yet --
 
-
+-- TODO: Check the person who is removing is either owner or admin of list --
+-- TODO: Remove the user from the tasks which are assigned to him when removing --
 
 PREPARE assign_task_to_user(id_domain, email_domain) AS
   UPDATE task SET assigned_user_email = $2 WHERE id = $1;
@@ -177,3 +175,48 @@ EXECUTE create_task_in_list('aliasgarikh@yahoo.com', '/University/Semester4/DB',
                             '2017-07-09 22:29:22.743437', '2:00:00', '3:00:00',
                             '2017-07-10 22:29:22.743437', NULL, 'aliasgarikh@yahoo.com');
 EXECUTE assign_task_to_user(2,'mohammad.alamy@gmail.com');
+
+
+
+PREPARE begin_task(id_domain) AS
+  UPDATE task SET real_time = current_timestamp WHERE id = $1;
+
+-- TODO: Check the user beginning task is the user that task is assigned to --
+
+PREPARE end_task(id_domain) AS
+  UPDATE task SET real_duration = current_timestamp - real_time WHERE id = $1;
+
+-- TODO: Check the user ending task is the user that task is assigned to --
+
+-- Tests --
+EXECUTE create_task_in_list('aliasgarikh@yahoo.com', '/University/Semester4/DB', 'Assignment2',
+                            FALSE, 'Second assignment', '2017-07-09 20:29:22.743437',
+                            NULL , '2:00:00', NULL, '2017-07-10 22:29:22.743437', NULL, 'mohammad.alamy@gmail.com')
+EXECUTE begin_task(3);
+EXECUTE end_task(3);
+
+
+
+PREPARE write_comment_under_task(id_domain, text_domain, email_domain, time_setting_domain, email_domain) AS
+  INSERT INTO comment VALUES($2, current_timestamp, $3, $1, $4, $5);
+-- Tests --
+EXECUTE write_comment_under_task(3, 'Covfefe', current_timestamp, 'mohammad.alamy@gmail.com', NULL, NULL);
+
+-- TODO: Check that only users can write comments that are either owner or shared with list. --
+
+PREPARE edit_comment_under_task(id_domain, time_setting_domain, text_domain, email_domain, time_setting_domain, email_domain) AS
+  UPDATE comment SET text = $3, time = current_timestamp, email = $4, replied_to_time = $5, replied_to_email = $6
+    WHERE id = $1 AND time = $2;
+-- Tests --
+EXECUTE edit_comment_under_task(3,'2017-07-09 22:58:03.238175', '???', 'mohammad.alamy@gmail.com', NULL, NULL );
+
+-- TODO: Check that the person which is editing comment is the person who wrote it --
+
+PREPARE delete_comment_under_task(id_domain, time_setting_domain) AS
+  DELETE FROM comment WHERE id = $1 AND time = $2;
+-- Not tested yet --
+
+-- TODO: Check that the person which is deleting comment is the person who wrote it or admin or owner --
+
+
+

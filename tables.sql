@@ -34,7 +34,6 @@ CREATE TABLE FolderActivities(
 CREATE TABLE List(
   path path_domain,
   email email_domain,
-  folder_path path_domain,
   FOREIGN KEY (path,email) REFERENCES Folder
     ON UPDATE CASCADE
     ON DELETE CASCADE,
@@ -84,6 +83,9 @@ CREATE TABLE TaskTags(
     ON DELETE CASCADE,
   PRIMARY KEY (id,tag)
 );
+
+ALTER TABLE Comment
+    ALTER COLUMN replied_to_time TYPE time_setting_domain;
 
 CREATE TABLE Comment(
   text  comment_text_domain,
