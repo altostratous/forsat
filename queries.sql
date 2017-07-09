@@ -69,25 +69,25 @@ PREPARE delete_list_for_user(email_domain, path_domain) AS
 
 PREPARE create_task_in_list(email_domain, path_domain, title_domain, boolean_domain,
   text_domain, time_setting_domain, time_setting_domain, duration_domain, duration_domain,
-  time_setting_domain, recurrence_id_domain) AS
+  time_setting_domain, recurrence_id_domain, email_domain) AS
   INSERT INTO task (title, starred, description, predicted_time, real_time, predicted_duration,
-                    real_duration, deadline, email, path, recurrence_of_id)
+                    real_duration, deadline, email, path, recurrence_of_id, assigned_user_email)
   VALUES ($3, $4, $5, $6, $7, $8,
-          $9, $10, $1, $2, $11);
+          $9, $10, $1, $2, $11, $12);
 -- Tests --
 EXECUTE create_task_in_list('aliasgarikh@yahoo.com', '/University/Semester4/DB', 'Project',
                             TRUE, 'Course Project', '2017-07-09 20:29:22.743437',
                             '2017-07-09 22:29:22.743437', '2:00:00', '3:00:00',
-                            '2017-07-10 22:29:22.743437', NULL);
+                            '2017-07-10 22:29:22.743437', NULL, 'aliasgarikh@yahoo.com');
 
-
+-- TODO: In personal lists(not shared) the task created must be assigned to creator automatically. Must be handled in app side --
 
 PREPARE edit_task_in_list(id_domain, email_domain, path_domain, title_domain, boolean_domain,
   text_domain, time_setting_domain, time_setting_domain, duration_domain, duration_domain,
-  time_setting_domain, recurrence_id_domain) AS
+  time_setting_domain, recurrence_id_domain, email_domain) AS
   UPDATE task SET email = $2, path = $3, title = $4, starred = $5, description = $6,
                   predicted_time = $7, real_time = $8, predicted_duration = $9,
-                  real_duration = $10, deadline = $11, recurrence_of_id = $12
+                  real_duration = $10, deadline = $11, recurrence_of_id = $12, assigned_user_email = $13
   WHERE id = $1;
 -- Tests --
 EXECUTE edit_task_in_list(1, 'aliasgarikh@yahoo.com', '/University/Semester4/DB', 'Assignment3',
@@ -102,4 +102,47 @@ PREPARE delete_task_in_list(id_domain) AS
 -- Not tested yet --
 
 
+
+PREPARE create_subtask_for_task(id_domain, title_domain) AS
+  INSERT INTO subtask (id, title) VALUES ($1, $2);
+-- Tests --
+EXECUTE create_subtask_for_task(1, 'Reading slides');
+
+
+
+PREPARE edit_subtask_for_task(id_domain, title_domain, title_domain, boolean_domain) AS
+  UPDATE subtask SET title = $3, done = $4 WHERE id = $1 AND title = $2;
+-- Tests --
+EXECUTE edit_subtask_for_task(1, 'Reading slides', 'Reading handouts', TRUE);
+
+
+
+PREPARE delete_subtask_for_task(id_domain, title_domain) AS
+  DELETE FROM subtask WHERE id = $1 AND title = $2;
+-- Not tested yet --
+
+
+
+PREPARE create_reminder_for_task(id_domain, time_setting_domain, boolean_domain, boolean_domain) AS
+  INSERT INTO reminder VALUES ($2, $1, $3, $4);
+-- Tests --
+EXECUTE create_reminder_for_task(1, '2017-07-11 20:30:0.0', TRUE, TRUE);
+
+
+
+PREPARE edit_reminder_for_task(id_domain, time_setting_domain, time_setting_domain, boolean_domain, boolean_domain) AS
+  UPDATE reminder SET time = $3, send_email = $4, notify = $5 WHERE id = $1 AND time = $2;
+-- Tests --
+EXECUTE edit_reminder_for_task(1, '2017-07-11 20:30:0.0', '2017-07-12 20:30:0.0', TRUE, FALSE);
+
+
+
+PREPARE delete_reminder_for_task(id_domain, time_setting_domain) AS
+  DELETE FROM reminder WHERE id = $1 AND time = $2;
+-- Not tested yet --
+
+
+
+PREPARE share_list_with_user(path_domain, email_domain, email_domain, boolean_domain) AS
+  INSERT INTO sharedfolders VALUES($1, $2, )
 

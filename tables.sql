@@ -59,11 +59,15 @@ CREATE TABLE Task(
   email email_domain,
   path path_domain,
   recurrence_of_id recurrence_id_domain,
+  assigned_user_email email_domain,
   PRIMARY KEY (id),
   FOREIGN KEY (path,email) REFERENCES List
     ON UPDATE CASCADE
     ON DELETE CASCADE,
   FOREIGN KEY (recurrence_of_id) REFERENCES Task
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  FOREIGN KEY (assigned_user_email) REFERENCES "User"
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );
@@ -108,6 +112,7 @@ CREATE TABLE Comment(
 CREATE TABLE Subtask(
   id id_domain,
   title title_domain,
+  done boolean_domain DEFAULT FALSE,
   FOREIGN KEY (id) REFERENCES Task
     ON UPDATE CASCADE
     ON DELETE CASCADE,
@@ -133,3 +138,17 @@ CREATE TABLE Role(
     ON DELETE CASCADE,
   PRIMARY KEY (email,name)
 );
+
+CREATE TABLE SharedFolders(
+  user_email email_domain,
+  owner_email email_domain,
+  path path_domain,
+  is_admin boolean_domain,
+  FOREIGN KEY (user_email) REFERENCES "User"
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (path, owner_email) REFERENCES Folder
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  PRIMARY KEY (user_email, owner_email, path)
+)
