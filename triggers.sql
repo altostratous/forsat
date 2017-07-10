@@ -44,27 +44,27 @@ CREATE TRIGGER reminder_time_update_validity
   FOR EACH ROW EXECUTE PROCEDURE ignore_bad_reminder_time();
 
 -- triggers to redirect delete and update from list to folder
-CREATE FUNCTION delete_from_list() RETURNS trigger AS $$
-  BEGIN
-    DELETE FROM folder WHERE OLD.email = email AND OLD.path = path;
-    RETURN OLD;
-  END;
-$$ LANGUAGE plpgsql;
-
-CREATE FUNCTION update_list() RETURNS trigger AS $$
-  BEGIN
-    UPDATE folder SET path = NEW.path, email = NEW.email WHERE email = OLD.email AND path = OLD.path;
-    RETURN NEW;
-  END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER list_delete_redirection
-  AFTER DELETE ON list
-  FOR EACH ROW EXECUTE PROCEDURE delete_from_list();
-
-CREATE TRIGGER list_update_redirection
-  BEFORE UPDATE ON list
-  FOR EACH ROW EXECUTE PROCEDURE update_list();
+-- CREATE FUNCTION delete_from_list() RETURNS trigger AS $$
+--   BEGIN
+--     DELETE FROM folder WHERE OLD.email = email AND OLD.path = path;
+--     RETURN OLD;
+--   END;
+-- $$ LANGUAGE plpgsql;
+--
+-- CREATE FUNCTION update_list() RETURNS trigger AS $$
+--   BEGIN
+--     UPDATE folder SET path = NEW.path, email = NEW.email WHERE email = OLD.email AND path = OLD.path;
+--     RETURN NEW;
+--   END;
+-- $$ LANGUAGE plpgsql;
+--
+-- CREATE TRIGGER list_delete_redirection
+--   AFTER DELETE ON list
+--   FOR EACH ROW EXECUTE PROCEDURE delete_from_list();
+--
+-- CREATE TRIGGER list_update_redirection
+--   BEFORE UPDATE ON list
+--   FOR EACH ROW EXECUTE PROCEDURE update_list();
 
 -- Assigning personal tasks automatically
 CREATE FUNCTION assign_personal_tasks() RETURNS trigger AS $$
@@ -86,8 +86,8 @@ CREATE FUNCTION check_task_availability() RETURNS trigger AS $$
   BEGIN
     IF NEW.id IN (
       SELECT id FROM task NATURAL JOIN sharedfolders WHERE
-        sharedfolders.owner_email = NEW.assigned_to_email OR
-        sharedfolders.user_email = NEW.assigned_to_email
+        sharedfolders.owner_email = NEW.assigned_user_email OR
+        sharedfolders.user_email = NEW.assigned_user_email
     ) THEN
       RETURN NEW;
     ELSE
@@ -95,7 +95,9 @@ CREATE FUNCTION check_task_availability() RETURNS trigger AS $$
     END IF;
   END;
 $$ LANGUAGE plpgsql;
-
+-- DROP TRIGGER task_assignment_validity ON task
+-- DROP TRIGGER task_assignment_update_validity ON task
+-- DROP FUNCTION check_task_availability()
 CREATE TRIGGER task_assignment_validity
   BEFORE INSERT ON task
   FOR EACH ROW
@@ -107,9 +109,19 @@ CREATE TRIGGER task_assignment_update_validity
   EXECUTE PROCEDURE check_task_availability();
 
 
+-- DROP TRIGGER log_task_insertion ON task
+-- DROP FUNCTION log_task_creation()
+
 -- Logging user activities
 CREATE FUNCTION log_task_creation() RETURNS trigger AS $$
   BEGIN
-    INSERT INTO folderactivities
+    INSERT INTO folderactivities (path, email, time, message)
+    VALUES (NEW.path, NEW.email, current_timestamp, 'A task was added.');
+    RETURN NEW;
   END;
-$$
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER log_task_insertion
+  AFTER INSERT ON task
+  FOR EACH ROW
+  EXECUTE PROCEDURE log_task_creation();
