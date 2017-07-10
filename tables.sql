@@ -8,9 +8,6 @@ CREATE TABLE "User"(
   PRIMARY KEY (email)
 );
 
-ALTER TABLE "User"
-    ADD COLUMN registration_time time_setting_domain
-
 CREATE TABLE Folder(
   path path_domain,
   email email_domain,

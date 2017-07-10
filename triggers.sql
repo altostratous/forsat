@@ -66,7 +66,6 @@ CREATE TRIGGER list_update_redirection
   BEFORE UPDATE ON list
   FOR EACH ROW EXECUTE PROCEDURE update_list();
 
-DROP TRIGGER list_delete_redirection;
 
 -- Assigning personal tasks automatically
 CREATE FUNCTION assign_personal_tasks() RETURNS trigger AS $$
