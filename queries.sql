@@ -1,5 +1,5 @@
 PREPARE registration(email_domain, nickname_domain, password_domain, pic_url_domain) AS
-  INSERT INTO "User" VALUES ($1, $2, $3, $4, current_timestamp);
+  INSERT INTO "User" VALUES ($1, $2, $3, $4, current_timestamp, current_timestamp);
 -- Tests --
 EXECUTE registration('altostratous@gmail.com', 'alto', '1979', 'www.google.com');
 
@@ -47,6 +47,8 @@ BEGIN
 END;
 $create_list_for_user$ LANGUAGE plpgsql;
 
+
+
 PREPARE create_task_in_list(email_domain, path_domain, title_domain, boolean_domain,
   text_domain, time_setting_domain, time_setting_domain, duration_domain, duration_domain,
   time_setting_domain, recurrence_id_domain, email_domain) AS
@@ -60,7 +62,7 @@ EXECUTE create_task_in_list('aliasgarikh@yahoo.com', '/University/Semester4/DB',
                             '2017-07-09 22:29:22.743437', '2:00:00', '3:00:00',
                             '2017-07-10 22:29:22.743437', NULL, 'aliasgarikh@yahoo.com');
 
--- TODO: In personal lists(not shared) the task created must be assigned to creator automatically. Must be handled in app side --
+
 
 PREPARE edit_task_in_list(id_domain, email_domain, path_domain, title_domain, boolean_domain,
   text_domain, time_setting_domain, time_setting_domain, duration_domain, duration_domain,
@@ -70,7 +72,6 @@ PREPARE edit_task_in_list(id_domain, email_domain, path_domain, title_domain, bo
                   real_duration = $10, deadline = $11, recurrence_of_id = $12, assigned_user_email = $13
   WHERE id = $1;
 -- Tests --
--- TODO: Edit tasks in
 EXECUTE edit_task_in_list(1, 'aliasgarikh@yahoo.com', '/University/Semester4/DB', 'Assignment3',
                             TRUE, 'Third Assignment', '2017-07-09 20:29:22.743437',
                             '2017-07-09 22:29:22.743437', '2:00:00', '3:00:00',
@@ -130,7 +131,6 @@ PREPARE share_list_with_user(email_domain, email_domain, path_domain, boolean_do
 EXECUTE registration('mohammad.alamy@gmail.com', 'MHA', '1968', 'www.avatar');
 EXECUTE share_list_with_user('mohammad.alamy@gmail.com', 'aliasgarikh@yahoo.com', '/University/Semester4/DB', TRUE);
 
--- TODO: Check the person who is sharing is either owner or admin of list --
 
 PREPARE edit_shared_list_with_user(email_domain, email_domain, path_domain, email_domain, path_domain, boolean_domain) AS
   UPDATE sharedfolders SET user_email = $4, path = $5, is_admin = $6 WHERE user_email = $1 AND owner_email = $2 AND path = $3;
@@ -138,14 +138,13 @@ PREPARE edit_shared_list_with_user(email_domain, email_domain, path_domain, emai
 EXECUTE edit_shared_list_with_user('mohammad.alamy@gmail.com', 'aliasgarikh@yahoo.com', '/University/Semester4/DB',
                                     'mohammad.alamy@gmail.com', '/University/Semester4/DB', FALSE );
 
--- TODO: Check the person who is editing is either owner or admin of list --
+
 
 PREPARE remove_user_from_list(email_domain, email_domain, path_domain) AS
   DELETE FROM sharedfolders WHERE user_email = $1 AND owner_email = $2 AND path = $3;
 -- Not tested yet --
 
--- TODO: Check the person who is removing is either owner or admin of list --
--- TODO: Remove the user from the tasks which are assigned to him when removing --
+
 
 PREPARE assign_task_to_user(id_domain, email_domain) AS
   UPDATE task SET assigned_user_email = $2 WHERE id = $1;
@@ -513,4 +512,45 @@ PREPARE delete_comment(id_domain, log_time_domain) AS
   DELETE FROM comment WHERE id = $1 AND time = $2;
 
 PREPARE promote_to_admin(email_domain) AS
-  INSERT INTO role VALUES($1, 'admin')
+  INSERT INTO role VALUES($1, 'admin');
+
+
+-- Test Data --
+EXECUTE registration('u1@m.c', 'u1', '1', '1');
+EXECUTE registration('u2@m.c', 'u2', '2', '2');
+EXECUTE registration('u3@m.c', 'u3', '3', '3');
+
+EXECUTE create_folder_for_user('u1@m.c', '/Public', NULL );
+EXECUTE create_folder_for_user('u2@m.c', '/Public', NULL );
+EXECUTE create_folder_for_user('u3@m.c', '/Public', NULL );
+
+SELECT create_list_for_user('u1@m.c', '/Public', '/Public/First');
+SELECT create_list_for_user('u2@m.c', '/Public', '/Public/Second');
+SELECT create_list_for_user('u3@m.c', '/Public', '/Public/Third');
+
+EXECUTE create_task_in_list('u1@m.c', '/Public/First', 'Task1',
+                            FALSE , 'First task of first user', '2018-01-01 20:30:0.0',
+                            NULL, '2:00:00', NULL ,
+                            '2018-01-02 20:30:0.0', NULL, 'u1@m.c');
+EXECUTE create_task_in_list('u2@m.c', '/Public/Second', 'Task1',
+                            FALSE , 'First task of second user', '2018-01-01 20:30:0.0',
+                            NULL, '2:00:00', NULL ,
+                            '2018-01-02 20:30:0.0', NULL, 'u2@m.c');
+EXECUTE create_task_in_list('u3@m.c', '/Public/Third', 'Task1',
+                            FALSE , 'First task of third user', '2018-01-01 20:30:0.0',
+                            NULL, '2:00:00', NULL ,
+                            '2018-01-02 20:30:0.0', NULL, 'u3@m.c');
+
+EXECUTE create_subtask_for_task(3, 'Subtask1');
+EXECUTE create_subtask_for_task(4, 'Subtask1');
+EXECUTE create_subtask_for_task(5, 'Subtask1');
+
+EXECUTE create_reminder_for_task(3, '2018-01-01 20:00:0.0', TRUE, TRUE);
+EXECUTE create_reminder_for_task(4, '2018-01-01 20:00:0.0', TRUE, TRUE);
+EXECUTE create_reminder_for_task(5, '2018-01-01 20:00:0.0', TRUE, TRUE);
+
+-- Creating a shared folder --
+
+EXECUTE create_folder_for_user('u1@m.c', '/Shared', NULL );
+SELECT create_list_for_user('u1@m.c', '/Shared', '/Shared/First');
+EXECUTE share_list_with_user('u2@m.c', 'u1@m.c', '/Shared/First', FALSE );

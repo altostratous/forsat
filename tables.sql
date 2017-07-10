@@ -4,12 +4,9 @@ CREATE TABLE "User"(
   password password_domain,
   pic_url pic_url_domain,
   last_activity log_time_domain,
-  registration_time time_setting_domain,
+  registration_time log_time_domain,
   PRIMARY KEY (email)
 );
-
-ALTER TABLE "User"
-    ADD COLUMN registration_time time_setting_domain
 
 CREATE TABLE Folder(
   path path_domain,
@@ -67,7 +64,7 @@ CREATE TABLE Task(
     ON DELETE CASCADE,
   FOREIGN KEY (assigned_user_email) REFERENCES "User"
     ON UPDATE CASCADE
-    ON DELETE CASCADE
+    ON DELETE SET NULL
 );
 
 CREATE TABLE ResourceURLs(
