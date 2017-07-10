@@ -204,6 +204,9 @@
                     </div>
                 </form>
                 -->
+                {% if message %}
+                <div style="color: Red">{{ message }}<br></div>
+                {% endif %}
                 {% block content %}
                 {% endblock %}
             </div>
