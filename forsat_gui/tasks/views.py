@@ -3,6 +3,9 @@ from tasks import forms
 
 
 # Create your views here.
+from tasks.models import Task
+
+
 def create(request):
     if request.method == 'POST':
         task = forms.TaskForm(request.POST).save(commit=False)
@@ -10,3 +13,7 @@ def create(request):
         return redirect('panel')
     else:
         return render(request, 'form.html', {'form': forms.TaskForm()})
+
+
+def single(request, task_id):
+    return render(request, 'form.html', {'form': forms.TaskForm(instance=Task.get_single_task(task_id))})

@@ -27,8 +27,11 @@ CREATE FUNCTION ignore_bad_reminder_time() RETURNS trigger AS $ignore_bad_remind
     IF (SELECT real_time + real_duration FROM Task WHERE id = NEW.id) < NEW.time THEN
     	RETURN NULL;
     END IF;
+    IF NEW.time < current_timestamp THEN
+      RETURN NULL;
+    END IF;
     RETURN NEW;
-    END;
+  END;
 $ignore_bad_reminder_time$ LANGUAGE plpgsql;
 
 -- triggers to prevent invalid reminders
@@ -64,3 +67,51 @@ CREATE TRIGGER list_update_redirection
   FOR EACH ROW EXECUTE PROCEDURE update_list();
 
 DROP TRIGGER list_delete_redirection;
+
+-- Assigning personal tasks automatically
+CREATE FUNCTION assign_personal_tasks() RETURNS trigger AS $$
+  BEGIN
+    IF NOT EXISTS(SELECT * FROM sharedfolders WHERE path = NEW.path AND owner_email = NEW.email) THEN
+      NEW.assigned_user_email = NEW.email;
+    END IF;
+    RETURN NEW;
+  END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER task_insert_validity
+  BEFORE INSERT ON task
+  FOR EACH ROW
+  EXECUTE PROCEDURE assign_personal_tasks();
+
+-- Task availability check
+CREATE FUNCTION check_task_availability() RETURNS trigger AS $$
+  BEGIN
+    IF NEW.id IN (
+      SELECT id FROM task NATURAL JOIN sharedfolders WHERE
+        sharedfolders.owner_email = NEW.assigned_to_email OR
+        sharedfolders.user_email = NEW.assigned_to_email
+    ) THEN
+      RETURN NEW;
+    ELSE
+      RETURN NULL;
+    END IF;
+  END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER task_assignment_validity
+  BEFORE INSERT ON task
+  FOR EACH ROW
+  EXECUTE PROCEDURE check_task_availability();
+
+CREATE TRIGGER task_assignment_update_validity
+  BEFORE UPDATE OF assigned_user_email ON task
+  FOR EACH ROW
+  EXECUTE PROCEDURE check_task_availability();
+
+
+-- Logging user activities
+CREATE FUNCTION log_task_creation() RETURNS trigger AS $$
+  BEGIN
+    INSERT INTO folderactivities
+  END;
+$$

@@ -4,6 +4,8 @@ from main.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib import auth
 
+from tasks.models import Task
+
 
 def register(request):
     if request.method == 'POST':
@@ -15,7 +17,8 @@ def register(request):
             request.message = 'Successfully registered.'
             authenticated_user = authenticate(username=user.email, password=raw_password)
             if authenticated_user is not None:
-                auth.login(request, user=authenticated_user, backend='main.authentication_backends.ForsatAuthenticationBackend')
+                auth.login(request, user=authenticated_user,
+                           backend='main.authentication_backends.ForsatAuthenticationBackend')
             return panel(request)
         else:
             request.message = 'There\'s a problem with the information. May be the ' \
@@ -34,9 +37,12 @@ def panel(request):
         message = request.message
     else:
         message = None
-    print(request.user)
-    print(request.user.is_anonymous)
-    return render(request, 'main/panel.html', {'message': message})
+    today_tasks = Task.get_tasks_of_today(request.user.email)
+    print(today_tasks)
+    for task in today_tasks:
+        print(task)
+    return render(request, 'main/panel.html',
+                  {'message': message, 'today_tasks': today_tasks})
 
 
 def logout(request):
