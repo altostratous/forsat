@@ -19,13 +19,13 @@
         <nav>
             <div class="nav-wrapper teal darken-4">
                 <a href="#" class="brand-logo center">Forsat</a>
-                {% if user.nickname %}
-                    <a href="#" class="nav-username" >{{ user.nickname }}</a>
+                {% if not request.user.is_anonymous %}
+                    <a href="#" class="nav-username" >{{ request.user.nickname }}</a>
                 {% endif %}
                 <ul id="nav-mobile" class="right hide-on-med-and-down">
-                    <li><a href="link3.html"><i class="material-icons">work</i></a></li>
-                    <li><a href="link2.html"><i class="material-icons">perm_identity</i></a></li>
-                    <li><a href="link1.html"><i class="material-icons">query_builder</i></a></li>
+                    <li><a href="/tasks/create"><i class="material-icons">work</i></a></li>
+                    <li><a href="/main/logout"><i class="material-icons">perm_identity</i></a></li>
+                    <li><a href="/main/panel#queries"><i class="material-icons">query_builder</i></a></li>
                 </ul>
             </div>
         </nav>
