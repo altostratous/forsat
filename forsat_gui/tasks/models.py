@@ -35,3 +35,10 @@ class Task(models.Model):
             ' WHERE assigned_user_email = %s AND'
             '  predicted_time BETWEEN current_date AND current_date + INTERVAL \'1 days\';', [email])
         return tasks
+
+    @staticmethod
+    def get_single_task(task_id):
+        tasks = Task.objects.raw(
+            'SELECT * FROM task'
+            ' WHERE id = %s', [task_id])
+        return tasks[0]
