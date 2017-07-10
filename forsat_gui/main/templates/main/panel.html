@@ -1,5 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+    <h4>Today tasks:</h4>
+    <table>
+        <thead>
+            <th>Title</th>
+            <th>Time</th>
+        </thead>
+        {% for task in today_tasks %}
+            <tr><td><a href="/tasks/single/{{ task.id }}">{{ task.title }}</a></td><td>{{ task.predicted_time }}</td></tr>
+        {% endfor %}
+    </table>
 {% endblock %}

@@ -27,3 +27,11 @@ class Task(models.Model):
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         pass
+
+    @staticmethod
+    def get_tasks_of_today(email):
+        tasks = Task.objects.raw(
+            'SELECT * FROM task'
+            ' WHERE assigned_user_email = %s AND'
+            '  predicted_time BETWEEN current_date AND current_date + INTERVAL \'1 days\';', [email])
+        return tasks

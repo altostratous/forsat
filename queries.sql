@@ -318,7 +318,6 @@ PREPARE get_tasks_of_a_day_in_a_list(email_domain, time_setting_domain, email_do
           AND email = $3 AND path = $4;
 
 
-
 PREPARE get_tasks_of_a_week(email_domain, time_setting_domain) AS
   SELECT * FROM task
     WHERE assigned_user_email = $1 AND predicted_time BETWEEN $2 AND $2 + INTERVAL '7 days';
@@ -495,3 +494,7 @@ PREPARE get_functionality_of_tasks_in_a_list(path_domain, email_domain) AS
   FROM task WHERE path = $1 AND task.email = $2 AND real_duration IS NOT NULL AND predicted_duration IS NOT NULL;
 -- Tests --
 EXECUTE get_functionality_of_tasks_in_a_folder('/University/Semester4/DB','aliasgarikh@yahoo.com');
+
+INSERT INTO task (title, predicted_time, email, path, starred, assigned_user_email) VALUES ('It is really nice', current_timestamp + INTERVAL'0.01 day', 'aliasgarikh@yahoo.com', '/University/Semester4/CA', FALSE, 'altostratous@gmail.com')
+
+SELECT * FROM task WHERE assigned_user_email = 'altostratous@gmail.com' AND predicted_time BETWEEN current_date AND current_date + INTERVAL '1 days';
