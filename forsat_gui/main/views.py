@@ -26,7 +26,7 @@ def register(request):
         message = request.message
     else:
         message = None
-    return render(request, 'main/register.html', {'form': form, 'message': message})
+    return render(request, 'form.html', {'form': form, 'message': message, 'form_action': '/main/register'})
 
 
 def panel(request):
