@@ -1,0 +1,283 @@
+{% load static %}
+<html>
+<head>
+    <meta charset="utf-8">
+    {% if title_for_layout %}
+    <title>{{ title_for_layout }}</title>
+    {% else %}
+    <title>Forsat</title>
+    {% endif %}
+    <link href="{% static 'css/google.css' %}" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="{% static 'css/materialize.min.css' %}"  media="screen,projection"/>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script type="text/javascript" src="{% static 'js/jquery-2.1.1.min.js' %}"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>    
+</head>
+<body class="">
+<!--  ناوبار -->
+    <div class="navbar-fixed">
+        <nav>
+            <div class="nav-wrapper teal darken-4">
+                <a href="#" class="brand-logo center">Forsat</a>
+                {% if user.nickname %}
+                    <a href="#" class="nav-username" >{{ user.nickname }}</a>
+                {% endif %}
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li><a href="link3.html"><i class="material-icons">work</i></a></li>
+                    <li><a href="link2.html"><i class="material-icons">perm_identity</i></a></li>
+                    <li><a href="link1.html"><i class="material-icons">query_builder</i></a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+<!--    عکس عدر-->
+<!--
+    <div class="jumbotron">
+        <div class="title teal-text text-darken-3">
+            <h1>چاپ فوری و حرفه ای بنر</h1>
+            <h4><span lang="en" style="font-size: .9em;">Proffesional banner priniting</span></h4>
+        </div>
+        <a href="stayhowe/index.html" class="center-align waves-effect waves-light btn-large teal darken-2">!برو که بریم برا چاپ</a>
+        <img src="{% static 'img/forest-1440x900-green-fog-threes-8160.jpg' %}" class="z-depth-3">
+    </div>
+    
+    <div class="parallax-container" style="margin-top: -10px">
+        <div class="parallax"><img src="{% static 'img/austria-1440x900-forest-fog-mist-pines-6203.jpg' %}"></div>
+    </div>
+    <div class="section teal darken-4 z-depth-2">
+        <div class="row container">
+            <h2 class="header white-text" style="font-family: 'yekan'; direction: rtl;">راز طبیعت</h2>
+            <p class="white-text text-darken-3 lighten-3" style="direction: rtl;">استفاده از طبیعت می تونه تو طراحی خیلی چیزا رو تغییر بده!<br>طبیعت، به معنای واقعی کلمه، معادل جهان یا عالم طبیعی، فیزیکی و مادی است. طبیعت در حالت کلی، به پدیده جهان فیزیکی و همچنین زندگی اشاره دارد؛ و همچنین اندازه ی آن از ذرات زیراتمی تا خود گیتی متغییر است.</p>
+        </div>
+    </div>
+    <div class="parallax-container">
+        <div class="parallax"><img src="{% static 'img/WOTD_macneed_1440x9001.jpg' %}"></div>
+    </div>
+-->
+<!--    شروع محتوا-->
+<div class="container">
+<!--    نمونه کارها-->
+    <!--
+    <div class="row sample-works">
+        <div class="col s12 m6 l3">
+            <div class="card teal accent-4">
+                <div class="card-image">
+                    <img src="{% static 'img/3d-1440x900-mountains-lake-night-clouds-5653.jpg' %}">
+                    <span class="card-title">نمونه کار</span>
+                </div>
+                <div class="card-content">
+                    <p>من یک نمونه کار هستم. اینجا اطلاعات کمی درباره ی من نوشته شده. من خیلی خوبم.</p>
+                </div>
+                <div class="card-action">
+                    <a href="#">اینم لینکه منه</a>
+                </div>
+            </div>
+        </div>
+        <div class="col s12 m6 l3">
+            <div class="card light-green darken-4">
+                <div class="card-image">
+                    <img src="{% static 'img/red-panda-1440x900-animal-nature-branch-green-fur-wild-1343.jpg' %}">
+                    <span class="card-title">نمونه کار</span>
+                </div>
+                <div class="card-content">
+                    <p>من یک نمونه کار هستم. اینجا اطلاعات کمی درباره ی من نوشته شده. من خیلی خوبم.</p>
+                </div>
+                <div class="card-action">
+                    <a href="#">اینم لینکه منه</a>
+                </div>
+            </div>
+        </div><div class="col s12 m6 l3">
+            <div class="card green darken-2">
+                <div class="card-image">
+                    <img src="{% static 'img/turtle-1440x900-swimming-andaman-sea-thailand-phuket-sport-turtles-4139.jpg' %}">
+                    <span class="card-title">نمونه کار</span>
+                </div>
+                <div class="card-content">
+                    <p>من یک نمونه کار هستم. اینجا اطلاعات کمی درباره ی من نوشته شده. من خیلی خوبم.</p>
+                </div>
+                <div class="card-action">
+                    <a href="#">اینم لینکه منه</a>
+                </div>
+            </div>
+        </div><div class="col s12 m6 l3">
+            <div class="card light-green">
+                <div class="card-image">
+                    <img src="{% static 'img/forest-1440x900-trees-sunlight-5520.jpg' %}">
+                    <span class="card-title">نمونه کار</span>
+                </div>
+                <div class="card-content">
+                    <p>من یک نمونه کار هستم. اینجا اطلاعات کمی درباره ی من نوشته شده. من خیلی خوبم.</p>
+                </div>
+                <div class="card-action">
+                    <a href="#">اینم لینکه منه</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    -->
+<!-- جریان کار -->
+{% if nav_bar %}
+    <div class="work-stream row">
+        <div class="col s12">
+            <div class="card-panel teal darken-2" style="direction: rtl;">
+                <!--
+                <a href="#!">جریان های کار:</a>
+                
+                    <a href="#0">ثبت نام</a>
+                    &gt
+                    <a href="#0">اطلاعات اولیه</a>
+                    &gt
+                    <a href="#0">ارسال عکس</a>
+                    &gt
+                    <a href="#0">نهایی سازی</a>
+                -->
+                {% for title, link in nav_bar.items %}
+                    <a href="{{ link }}">{{ title }}</a>&gt
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+{% endif %}
+<!-- فرم اصلی-->
+    <div class="main-form row">
+        <div class="col s12">
+            <div class="card-panel white"> 
+<!--                نام-->
+                <!--
+                <form class="col s12">
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input id="first_name" type="text" class="validate">
+                            <label for="first_name">نام</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input id="last_name" type="text" class="validate">
+                            <label for="last_name">نام خانوادگی</label>
+                        </div>
+                    </div>
+                    
+                </form>
+                -->
+<!--                جدول-->
+                <!--<div class="row">
+                    انتخاب ها
+                    </div>
+                <table class="highlight centered">
+                    <thead>
+                        <tr>
+                            <th data-field="id">انتخاب</th>
+                            <th data-field="name">توضیحات</th>
+                            <th data-field="price">عملکردها</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox" id="test1" /><label for="test1"></label></td>
+                            <td>توضیحات واضحات</td>
+                            <td>$0.87</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" id="test2" /><label for="test2"></label></td>
+                            <td>فلان و بیسار</td>
+                            <td>$3.76</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" id="test3" /><label for="test3"></label></td>
+                            <td>نوشته آزمایشی</td>
+                            <td>$7.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+                -->
+<!--                آپلود فایل-->
+                <!--
+                <form action="#">
+                    <div class="file-field input-field">
+                        <div class="btn">
+                            <span>آپلود</span>
+                            <input type="file">
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text">
+                        </div>
+                    </div>
+                </form>
+                -->
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+<!--    کارت ها-->
+    <div class="row cards">
+        <div class="col s12 m4">
+            <div class="card teal darken-2">
+            <div class="card-content white-text">
+                <span class="card-title">DBMS</span>
+                <p>This system uses Postgres SQL as its DBMS. This system uses Postgres SQL as its DBMS. This system uses Postgres SQL as its DBMS.</p>
+            </div>
+            <div class="card-action">
+                <a href="#"><span lang="en">PGSql</span></a>
+            </div>
+            </div>
+        </div>
+        <div class="col s12 m4">
+            <div class="card teal darken-1">
+            <div class="card-content white-text">
+                <span class="card-title">Framework</span>
+                <p>The backend is powered by Django as a framework. The backend is powered by Django as a framework. The backend is powered by Django as a framework.</p>
+            </div>
+            <div class="card-action">
+                <a href="#"><span lang="en">Django</span></a>
+            </div>
+            </div>
+        </div>
+        <div class="col s12 m4">
+            <div class="card teal darken-3">
+            <div class="card-content white-text">
+                <span class="card-title">GUI</span>
+                <p>Its frontend GUI is Materialized. Its frontend GUI is Materialized. Its frontend GUI is Materialized. Its frontend GUI is Materialized. Its frontend GUI is Materialized.</p>
+            </div>
+            <div class="card-action">
+                <a href="#"><span lang="en">Materialized</span></a>
+            </div>
+            </div>
+        </div>
+    </div>
+    
+<!--    پایان محتوا-->
+    </div>
+    
+    
+<!--    فوتر-->
+    <footer class="page-footer light-green lighten-1">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="white-text">Services</h5>
+                    <p class="grey-text text-lighten-4">Forsat serves you to be able to be more productive. Forsat serves you to be able to be more productive. Forsat serves you to be able to be more productive.</p>
+                </div>
+                <div class="col l4 offset-l2 s12">
+                    <h5 class="white-text">Links</h5>
+                    <ul>
+                        <li><a class="grey-text text-lighten-3" href="#!">Home</a></li>
+                        <li><a class="grey-text text-lighten-3" href="stayhowe/index.html">Services</a></li>
+                        <li><a class="grey-text text-lighten-3" href="#!">GitHub</a></li>
+                        <li><a class="grey-text text-lighten-3" href="#!">Twitter</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright light-green">
+            <div class="container" style="padding: 0; text-align: left;">
+            <span lang="en">© 2016 Copyright Ali Asgari and Hossein Naderi developed the template.</span>
+            <span lang="en">© 2016 Copyright Ali Asgari and Mohammad Hossein Alamy developed the system.</span>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript" src="{% static 'js/materialize.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/init.js' %}"></script>
+</body>
+</html>
