@@ -258,6 +258,240 @@ PREPARE get_tasks_with_tag(label_domain) AS
 
 
 
+PREPARE get_recent_comments_of_a_task(id_domain) AS
+  SELECT * FROM comment
+    WHERE id = $1 AND time BETWEEN current_timestamp - INTERVAL '7 days' AND current_timestamp;
+-- Tests --
+EXECUTE write_comment_under_task(2, '!!!', 'aliasgarikh@yahoo.com', NULL, NULL);
+EXECUTE get_recent_comments_of_a_task(2);
 
 
 
+PREPARE get_older_comments_of_a_task(id_domain) AS
+  SELECT * FROM comment
+    WHERE id = $1 AND time < current_timestamp - INTERVAL '7 days';
+-- Tests --
+EXECUTE get_older_comments_of_a_task(2);
+
+
+
+PREPARE get_recent_comments_of_other_users(email_domain) AS
+  SELECT * FROM comment
+    WHERE id IN (
+      SELECT id FROM task AS t
+        WHERE exists(
+            SELECT * FROM sharedfolders AS sf
+              WHERE sf.path = t.path AND (sf.user_email = $1 OR sf.owner_email = $1)
+        )
+    ) ORDER BY time DESC LIMIT 20;
+
+
+
+PREPARE get_activity_of_shared_lists(email_domain) AS
+  SELECT time, message FROM folderactivities
+    WHERE path IN (
+      SELECT path FROM sharedfolders
+        WHERE user_email = $1 OR owner_email = $1
+    );
+-- TODO: Create a trigger to record user activities in folders --
+
+
+
+PREPARE get_activity_of_personal_lists(email_domain) AS
+  SELECT time, message FROM folderactivities
+    WHERE email = $1;
+
+
+
+PREPARE get_tasks_of_a_day(email_domain, time_setting_domain) AS
+  SELECT * FROM task
+    WHERE assigned_user_email = $1 AND predicted_time BETWEEN $2 AND $2 + INTERVAL '1 days';
+
+PREPARE get_starred_tasks_of_a_day(email_domain, time_setting_domain) AS
+  SELECT * FROM task
+    WHERE assigned_user_email = $1 AND predicted_time BETWEEN $2 AND $2 + INTERVAL '1 days'
+          AND starred = TRUE;
+
+PREPARE get_tasks_of_a_day_in_a_list(email_domain, time_setting_domain, email_domain, path_domain) AS
+  SELECT * FROM task
+    WHERE assigned_user_email = $1 AND predicted_time BETWEEN $2 AND $2 + INTERVAL '1 days'
+          AND email = $3 AND path = $4;
+
+
+
+PREPARE get_tasks_of_a_week(email_domain, time_setting_domain) AS
+  SELECT * FROM task
+    WHERE assigned_user_email = $1 AND predicted_time BETWEEN $2 AND $2 + INTERVAL '7 days';
+
+PREPARE get_starred_tasks_of_a_week(email_domain, time_setting_domain) AS
+  SELECT * FROM task
+    WHERE assigned_user_email = $1 AND predicted_time BETWEEN $2 AND $2 + INTERVAL '7 days'
+          AND starred = TRUE;
+
+PREPARE get_tasks_of_a_week_in_a_list(email_domain, time_setting_domain, email_domain, path_domain) AS
+  SELECT * FROM task
+    WHERE assigned_user_email = $1 AND predicted_time BETWEEN $2 AND $2 + INTERVAL '7 days'
+          AND email = $3 AND path = $4;
+
+
+
+PREPARE get_tasks_of_a_month(email_domain, time_setting_domain) AS
+  SELECT * FROM task
+    WHERE assigned_user_email = $1 AND predicted_time BETWEEN $2 AND $2 + INTERVAL '30 days';
+
+PREPARE get_starred_tasks_of_a_month(email_domain, time_setting_domain) AS
+  SELECT * FROM task
+    WHERE assigned_user_email = $1 AND predicted_time BETWEEN $2 AND $2 + INTERVAL '30 days'
+          AND starred = TRUE;
+
+PREPARE get_tasks_of_a_month_in_a_list(email_domain, time_setting_domain, email_domain, path_domain) AS
+  SELECT * FROM task
+    WHERE assigned_user_email = $1 AND predicted_time BETWEEN $2 AND $2 + INTERVAL '30 days'
+          AND email = $3 AND path = $4;
+
+
+
+PREPARE get_tasks_of_an_interval(email_domain, time_setting_domain, time_setting_domain) AS
+  SELECT * FROM task
+    WHERE assigned_user_email = $1 AND predicted_time BETWEEN $2 AND $3;
+
+PREPARE get_starred_tasks_of_an_interval(email_domain, time_setting_domain, time_setting_domain) AS
+  SELECT * FROM task
+    WHERE assigned_user_email = $1 AND predicted_time BETWEEN $2 AND $3 AND starred = TRUE;
+
+
+
+PREPARE sort_tasks_of_a_list_by_deadline(email_domain, path_domain) AS
+  SELECT * FROM task
+    WHERE email = $1 AND path = $2
+      ORDER BY deadline DESC;
+
+PREPARE sort_tasks_of_a_list_by_predicted_time(email_domain, path_domain) AS
+  SELECT * FROM task
+    WHERE email = $1 AND path = $2
+      ORDER BY predicted_time DESC;
+
+PREPARE sort_tasks_of_a_list_by_predicted_duration(email_domain, path_domain) AS
+  SELECT * FROM task
+    WHERE email = $1 AND path = $2
+      ORDER BY predicted_duration DESC;
+
+PREPARE sort_tasks_of_a_list_by_starred(email_domain, path_domain) AS
+  SELECT * FROM task
+    WHERE email = $1 AND path = $2
+      ORDER BY starred DESC;
+
+
+
+PREPARE get_tasks_with_deadline_before(email_domain, time_setting_domain) AS
+  SELECT * FROM task
+    WHERE assigned_user_email = $1 AND deadline < $2;
+
+PREPARE get_tasks_with_deadline_before_in_a_list(email_domain, time_setting_domain, email_domain, path_domain) AS
+  SELECT * FROM task
+    WHERE assigned_user_email = $1 AND deadline < $2 AND email = $3 AND path = $4;
+
+
+
+PREPARE get_total_duration_for_a_folder_in_an_interval(email_domain, path_domain, time_setting_domain, time_setting_domain) AS
+  SELECT sum(predicted_duration) FROM task
+    WHERE email = $1 AND path LIKE $2 || '%' AND predicted_time BETWEEN $3 AND $4;
+
+PREPARE get_total_duration_for_a_list_in_an_interval(email_domain, path_domain, time_setting_domain, time_setting_domain) AS
+  SELECT sum(predicted_duration) FROM task
+    WHERE email = $1 AND path = $2 AND predicted_time BETWEEN $3 AND $4;
+
+PREPARE get_total_duration_for_a_tag_in_an_interval(email_domain, label_domain, time_setting_domain, time_setting_domain) AS
+  SELECT sum(predicted_duration) FROM task as t
+    WHERE predicted_time BETWEEN $3 AND $4 AND exists(
+        SELECT * FROM tasktags as tt
+          WHERE tt.id = t.id AND tag = $2
+    ) AND (email = $1 OR exists (
+        SELECT * FROM sharedfolders as sf
+          WHERE user_email = $1 AND sf.owner_email = t.email AND sf.path = t.path
+    ));
+
+
+
+PREPARE get_total_real_duration_for_a_folder_in_an_interval(email_domain, path_domain, time_setting_domain, time_setting_domain) AS
+  SELECT sum(real_duration) FROM task
+    WHERE email = $1 AND path LIKE $2 || '%' AND predicted_time BETWEEN $3 AND $4;
+-- TODO: check that the input interval is in past, because we are calculating real time. also for the two next queries --
+
+PREPARE get_total_duration_for_a_list_in_an_interval(email_domain, path_domain, time_setting_domain, time_setting_domain) AS
+  SELECT sum(real_duration) FROM task
+    WHERE email = $1 AND path = $2 AND predicted_time BETWEEN $3 AND $4;
+
+PREPARE get_total_duration_for_a_tag_in_an_interval(email_domain, label_domain, time_setting_domain, time_setting_domain) AS
+  SELECT sum(real_duration) FROM task as t
+    WHERE predicted_time BETWEEN $3 AND $4 AND exists(
+        SELECT * FROM tasktags as tt
+          WHERE tt.id = t.id AND tag = $2
+    ) AND (email = $1 OR exists (
+        SELECT * FROM sharedfolders as sf
+          WHERE user_email = $1 AND sf.owner_email = t.email AND sf.path = t.path
+    ));
+
+
+
+PREPARE get_longest_task_in_future_shorter_than(email_domain, duration_domain) AS
+  SELECT id FROM task as t WHERE
+      email = $1 OR exists(
+        SELECT * FROM sharedfolders as sf
+          WHERE user_email = $1 AND owner_email = t.email AND sf.path = t.path
+      ) AND predicted_duration < $2 ORDER BY predicted_duration DESC LIMIT 1
+        AND predicted_time BETWEEN current_timestamp AND current_timestamp + INTERVAL '7 days';
+
+
+
+PREPARE get_total_real_duration_for_user(email_domain, time_setting_domain, time_setting_domain) AS
+  SELECT sum(real_duration) FROM task AS t
+    WHERE real_duration IS NOT NULL AND (email = $1 OR exists (
+        SELECT * FROM sharedfolders as sf
+          WHERE user_email = $1 AND sf.owner_email = t.email AND sf.path = t.path
+    )) AND predicted_time BETWEEN $2 AND $3;
+
+DEALLOCATE PREPARE get_user_free_time_in_interval;
+
+PREPARE get_user_free_time_in_interval(email_domain, time_setting_domain, time_setting_domain) AS
+  SELECT extract(HOUR FROM ($3 - $2)) - extract(HOUR FROM sum(predicted_duration)) * (
+    SELECT extract(HOUR FROM sum(real_duration))/extract(HOUR FROM sum(predicted_duration)) FROM task
+      WHERE real_duration IS NOT NULL AND predicted_duration IS NOT NULL AND assigned_user_email = $1
+  ) FROM task WHERE predicted_time BETWEEN $2 AND $3 AND assigned_user_email = $1;
+-- TODO: Make sure that the tasks in personal lists are assigned to owner when created --
+EXECUTE get_user_free_time_in_interval('mohammad.alamy@gmail.com', current_timestamp, current_timestamp + '0 years 0 mons 0 days 5 hours 0 mins 0.00 secs')
+
+
+
+PREPARE get_functionality_of_a_task(id_domain) AS
+  SELECT (extract(SECOND FROM real_duration) + 60*(extract(MINUTE FROM real_duration)) +
+          3600*(extract(HOUR FROM real_duration)) + 43200*(extract(DAY FROM real_duration)))
+          /
+         (extract(SECOND FROM predicted_duration) + 60*(extract(MINUTE FROM predicted_duration)) +
+          3600*(extract(HOUR FROM predicted_duration)) + 43200*(extract(DAY FROM predicted_duration)))
+  FROM task WHERE id = $1;
+-- Tests --
+EXECUTE get_functionality_of_a_task(4);
+
+DEALLOCATE PREPARE get_functionality_of_tasks_in_a_duration;
+
+PREPARE get_functionality_of_tasks_in_a_duration(email_domain, time_setting_domain, time_setting_domain) AS
+  SELECT (extract(SECOND FROM sum(real_duration)) + 60*(extract(MINUTE FROM sum(real_duration))) +
+          3600*(extract(HOUR FROM sum(real_duration))) + 43200*(extract(DAY FROM sum(real_duration))))
+          /
+         (extract(SECOND FROM sum(predicted_duration)) + 60*(extract(MINUTE FROM sum(predicted_duration))) +
+          3600*(extract(HOUR FROM sum(predicted_duration))) + 43200*(extract(DAY FROM sum(predicted_duration))))
+  FROM task WHERE assigned_user_email = $1 AND real_duration IS NOT NULL AND predicted_duration IS NOT NULL
+            AND real_time BETWEEN $2 AND $3;
+-- Tests --
+EXECUTE get_functionality_of_tasks_in_a_duration('mohammad.alamy@gmail.com', '2017-07-09 22:20:00.0', '2017-07-09 22:50:00.0')
+
+PREPARE get_functionality_of_tasks_in_a_list(path_domain, email_domain) AS
+  SELECT (extract(SECOND FROM sum(real_duration)) + 60*(extract(MINUTE FROM sum(real_duration))) +
+          3600*(extract(HOUR FROM sum(real_duration))) + 43200*(extract(DAY FROM sum(real_duration))))
+          /
+         (extract(SECOND FROM sum(predicted_duration)) + 60*(extract(MINUTE FROM sum(predicted_duration))) +
+          3600*(extract(HOUR FROM sum(predicted_duration))) + 43200*(extract(DAY FROM sum(predicted_duration))))
+  FROM task WHERE path = $1 AND task.email = $2 AND real_duration IS NOT NULL AND predicted_duration IS NOT NULL;
+-- Tests --
+EXECUTE get_functionality_of_tasks_in_a_folder('/University/Semester4/DB','aliasgarikh@yahoo.com');
