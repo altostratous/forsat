@@ -64,3 +64,18 @@ CREATE TRIGGER list_update_redirection
   FOR EACH ROW EXECUTE PROCEDURE update_list();
 
 DROP TRIGGER list_delete_redirection;
+
+-- Logging user folder activities
+CREATE FUNCTION assign_personal_tasks() RETURNS trigger AS $$
+  BEGIN
+    IF NOT EXISTS(SELECT * FROM sharedfolders WHERE path = NEW.path AND owner_email = NEW.email) THEN
+      NEW.assigned_user_email = NEW.email;
+    END IF;
+    RETURN NEW;
+  END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER task_insert_validity
+  BEFORE INSERT ON task
+  FOR EACH ROW
+  EXECUTE PROCEDURE assign_personal_tasks();
