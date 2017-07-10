@@ -138,3 +138,5 @@ STATICFILES_DIRS = [
 ]
 
 AUTHENTICATION_BACKENDS = ['main.authentication_backends.ForsatAuthenticationBackend']
+
+AUTH_USER_MODEL = 'main.User'
