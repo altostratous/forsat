@@ -47,26 +47,6 @@ BEGIN
 END;
 $create_list_for_user$ LANGUAGE plpgsql;
 
--- TODO: Creating trigger for inserting values into Folder table --
-EXECUTE create_folder_for_user ('aliasgarikh@yahoo.com', '/University/Semester4', NULL);
-SELECT create_list_for_user('aliasgarikh@yahoo.com', '/University/Semester4', '/University/Semester4/CA');
-
-ALTER TABLE list DROP COLUMN folder_path;
-
-PREPARE move_list_for_user(email_domain, path_domain, path_domain, path_domain) AS
-  UPDATE list SET path = $3, folder_path = $4 WHERE email = $1 AND path = $2;
--- TODO: Creating trigger for updating values of Folder table --
-EXECUTE move_list_for_user('aliasgarikh@yahoo.com', '/University/Semester4/CA', '/University/Semester4/DB', '/University/Semester4');
-
-
-
-PREPARE delete_list_for_user(email_domain, path_domain) AS
-  DELETE FROM list WHERE email = $1 AND path = $2;
--- TODO: Creating trigger for deleting values from Folder table --
--- Not tested yet --
-
-
-
 PREPARE create_task_in_list(email_domain, path_domain, title_domain, boolean_domain,
   text_domain, time_setting_domain, time_setting_domain, duration_domain, duration_domain,
   time_setting_domain, recurrence_id_domain, email_domain) AS
@@ -192,7 +172,7 @@ PREPARE end_task(id_domain) AS
 -- Tests --
 EXECUTE create_task_in_list('aliasgarikh@yahoo.com', '/University/Semester4/DB', 'Assignment2',
                             FALSE, 'Second assignment', '2017-07-09 20:29:22.743437',
-                            NULL , '2:00:00', NULL, '2017-07-10 22:29:22.743437', NULL, 'mohammad.alamy@gmail.com')
+                            NULL , '2:00:00', NULL, '2017-07-10 22:29:22.743437', NULL, 'mohammad.alamy@gmail.com');
 EXECUTE begin_task(3);
 EXECUTE end_task(3);
 
@@ -306,6 +286,8 @@ PREPARE get_activity_of_personal_lists(email_domain) AS
 PREPARE get_tasks_of_a_day(email_domain, time_setting_domain) AS
   SELECT * FROM task
     WHERE assigned_user_email = $1 AND predicted_time BETWEEN $2 AND $2 + INTERVAL '1 days';
+-- Tests --
+EXECUTE get_tasks_of_a_day('mohammad.alamy@gmail.com', '2017-07-09');
 
 PREPARE get_starred_tasks_of_a_day(email_domain, time_setting_domain) AS
   SELECT * FROM task
@@ -459,7 +441,7 @@ PREPARE get_user_free_time_in_interval(email_domain, time_setting_domain, time_s
       WHERE real_duration IS NOT NULL AND predicted_duration IS NOT NULL AND assigned_user_email = $1
   ) FROM task WHERE predicted_time BETWEEN $2 AND $3 AND assigned_user_email = $1;
 -- TODO: Make sure that the tasks in personal lists are assigned to owner when created --
-EXECUTE get_user_free_time_in_interval('mohammad.alamy@gmail.com', current_timestamp, current_timestamp + '0 years 0 mons 0 days 5 hours 0 mins 0.00 secs')
+EXECUTE get_user_free_time_in_interval('mohammad.alamy@gmail.com', current_timestamp, current_timestamp + '0 years 0 mons 0 days 5 hours 0 mins 0.00 secs');
 
 
 
@@ -484,7 +466,7 @@ PREPARE get_functionality_of_tasks_in_a_duration(email_domain, time_setting_doma
   FROM task WHERE assigned_user_email = $1 AND real_duration IS NOT NULL AND predicted_duration IS NOT NULL
             AND real_time BETWEEN $2 AND $3;
 -- Tests --
-EXECUTE get_functionality_of_tasks_in_a_duration('mohammad.alamy@gmail.com', '2017-07-09 22:20:00.0', '2017-07-09 22:50:00.0')
+EXECUTE get_functionality_of_tasks_in_a_duration('mohammad.alamy@gmail.com', '2017-07-09 22:20:00.0', '2017-07-09 22:50:00.0');
 
 PREPARE get_functionality_of_tasks_in_a_list(path_domain, email_domain) AS
   SELECT (extract(SECOND FROM sum(real_duration)) + 60*(extract(MINUTE FROM sum(real_duration))) +
@@ -494,4 +476,41 @@ PREPARE get_functionality_of_tasks_in_a_list(path_domain, email_domain) AS
           3600*(extract(HOUR FROM sum(predicted_duration))) + 43200*(extract(DAY FROM sum(predicted_duration))))
   FROM task WHERE path = $1 AND task.email = $2 AND real_duration IS NOT NULL AND predicted_duration IS NOT NULL;
 -- Tests --
-EXECUTE get_functionality_of_tasks_in_a_folder('/University/Semester4/DB','aliasgarikh@yahoo.com');
+EXECUTE get_functionality_of_tasks_in_a_list('/University/Semester4/DB','aliasgarikh@yahoo.com');
+
+PREPARE get_functionality_of_tasks_in_a_folder(path_domain, email_domain) AS
+  SELECT (extract(SECOND FROM sum(real_duration)) + 60*(extract(MINUTE FROM sum(real_duration))) +
+          3600*(extract(HOUR FROM sum(real_duration))) + 43200*(extract(DAY FROM sum(real_duration))))
+          /
+         (extract(SECOND FROM sum(predicted_duration)) + 60*(extract(MINUTE FROM sum(predicted_duration))) +
+          3600*(extract(HOUR FROM sum(predicted_duration))) + 43200*(extract(DAY FROM sum(predicted_duration))))
+  FROM task WHERE path = $1 || '%' AND task.email = $2 AND real_duration IS NOT NULL AND predicted_duration IS NOT NULL;
+
+SELECT count(*) FROM "User"
+  WHERE extract(date FROM last_activity) = extract(DATE FROM current_timestamp);
+-- TODO: Updating user last_activity after all actions --
+
+PREPARE get_number_of_users_added_in_an_interval(time_setting_domain, time_setting_domain) AS
+  SELECT count(email) FROM "User"
+    WHERE registration_time BETWEEN $1 AND $2;
+
+PREPARE get_user_growth_rate_in_an_interval(time_setting_domain, time_setting_domain) AS
+  SELECT (SELECT count(email) FROM "User"
+    WHERE registration_time BETWEEN $1 AND $2)
+  /(SELECT count(email) FROM "User"
+    WHERE registration_time < $1) FROM "User";
+
+PREPARE delete_user(email_domain) AS
+  DELETE FROM "User" WHERE email = $1;
+
+PREPARE delete_list(path_domain, email_domain) AS
+  DELETE FROM list WHERE path = $1 AND email = $2;
+
+PREPARE delete_folder(path_domain, email_domain) AS
+  DELETE FROM folder WHERE path = $1 AND email = $2;
+
+PREPARE delete_comment(id_domain, log_time_domain) AS
+  DELETE FROM comment WHERE id = $1 AND time = $2;
+
+PREPARE promote_to_admin(email_domain) AS
+  INSERT INTO role VALUES($1, 'admin')
