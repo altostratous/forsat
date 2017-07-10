@@ -577,3 +577,52 @@ EXECUTE create_task_in_list('u1@m.c', '/Public/First', 'Task2',
                             FALSE , 'Second task of first user', '2018-01-03 20:30:0.0',
                             NULL, '5:00:00', NULL ,
                             '2018-01-06 20:30:0.0', NULL, NULL );
+
+-- Testing get report queries --
+EXECUTE get_tasks_with_tag('u1@m.c', 'T1');
+EXECUTE get_tasks_with_tag('u1@m.c', 'T3');
+EXECUTE get_tasks_with_tag('u2@m.c', 'T3');
+
+-- For checking comments --
+
+EXECUTE get_recent_comments_of_a_task(10);
+EXECUTE get_older_comments_of_a_task(10);
+EXECUTE get_recent_comments_of_other_users('u1@m.c');
+
+-- For checking starred --
+
+EXECUTE edit_task_in_list(3, 'u1@m.c', '/Public/First', 'Task1',
+                            TRUE , 'First task of first user', '2018-01-01 20:30:0.0',
+                            NULL, '2:00:00', NULL ,
+                            '2018-01-02 20:30:0.0', NULL, 'u1@m.c');
+
+-- For checking day and month and year --
+
+EXECUTE create_task_in_list('u1@m.c', '/Public/First', 'Task3',
+                            FALSE , 'Third task of first user', '2018-01-03 20:30:0.0',
+                            NULL, '2:00:00', NULL ,
+                            '2018-01-04 20:30:0.0', NULL, 'u1@m.c');
+EXECUTE create_task_in_list('u1@m.c', '/Public/First', 'Task4',
+                            FALSE , 'Fourth task of first user', '2018-01-10 20:30:0.0',
+                            NULL, '2:00:00', NULL ,
+                            '2018-01-12 20:30:0.0', NULL, 'u1@m.c');
+EXECUTE create_task_in_list('u1@m.c', '/Public/First', 'Task5',
+                            FALSE , 'Fifth task of first user', '2018-02-05 20:30:0.0',
+                            NULL, '2:00:00', NULL ,
+                            '2018-02-10 20:30:0.0', NULL, 'u1@m.c');
+
+EXECUTE sort_tasks_of_a_list_by_predicted_duration('u1@m.c', '/Public/First');
+EXECUTE sort_tasks_of_a_list_by_starred('u1@m.c', '/Public/First');
+
+EXECUTE create_task_in_list('u2@m.c', '/Public/Second', 'Task2',
+                            FALSE , 'Second task of second user', '2016-01-01 20:30:0.0',
+                            '2016-01-01 21:30:0.0', '2:00:00', '2:30:00' ,
+                            '2018-01-02 20:30:0.0', NULL, 'u2@m.c');
+EXECUTE create_task_in_list('u2@m.c', '/Public/Second', 'Task3',
+                            FALSE , 'Third task of third user', '2016-01-03 20:30:0.0',
+                            '2016-01-01 22:0:0.0', '2:00:00', '3:00:00' ,
+                            '2018-01-02 20:30:0.0', NULL, 'u2@m.c');
+EXECUTE create_task_in_list('u2@m.c', '/Public/Second', 'Task4',
+                            FALSE , 'Fourth task of fourth user', '2016-01-10 20:30:0.0',
+                            '2016-01-01 22:30:0.0', '2:00:00', '3:30:00' ,
+                            '2018-01-02 20:30:0.0', NULL, 'u2@m.c');
