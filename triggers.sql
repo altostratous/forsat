@@ -66,8 +66,6 @@ CREATE TRIGGER list_update_redirection
   BEFORE UPDATE ON list
   FOR EACH ROW EXECUTE PROCEDURE update_list();
 
-DROP TRIGGER list_delete_redirection;
-
 -- Assigning personal tasks automatically
 CREATE FUNCTION assign_personal_tasks() RETURNS trigger AS $$
   BEGIN
@@ -80,7 +78,7 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER task_insert_validity
   BEFORE INSERT ON task
-  FOR EACH ROW
+    FOR EACH ROW
   EXECUTE PROCEDURE assign_personal_tasks();
 
 -- Task availability check

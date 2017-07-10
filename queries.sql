@@ -15,7 +15,6 @@ EXECUTE edit_personal_info('altostratous@gmail.com','aliasgarikh@yahoo.com','alt
 
 PREPARE remove_user(email_domain) AS
   DELETE FROM "User" WHERE email = $1;
--- Not tested yet --
 
 
 
@@ -38,7 +37,8 @@ EXECUTE move_folder_for_user('aliasgarikh@yahoo.com', '/Shora', '/University/Sho
 
 PREPARE delete_folder_for_user(email_domain, path_domain, path_domain) AS
   DELETE FROM folder WHERE email = $1 AND path = $2 AND child_of_path = $3;
--- Not tested yet --
+
+
 
 CREATE FUNCTION create_list_for_user(email email_domain, parent_path path_domain, path path_domain) RETURNS VOID AS $create_list_for_user$
 BEGIN
@@ -81,7 +81,6 @@ EXECUTE edit_task_in_list(1, 'aliasgarikh@yahoo.com', '/University/Semester4/DB'
 
 PREPARE delete_task_in_list(id_domain) AS
   DELETE FROM task WHERE id = $1;
--- Not tested yet --
 
 
 
@@ -101,7 +100,6 @@ EXECUTE edit_subtask_for_task(1, 'Reading slides', 'Reading handouts', TRUE);
 
 PREPARE delete_subtask_for_task(id_domain, title_domain) AS
   DELETE FROM subtask WHERE id = $1 AND title = $2;
--- Not tested yet --
 
 
 
@@ -121,7 +119,6 @@ EXECUTE edit_reminder_for_task(1, '2017-07-11 20:30:0.0', '2017-07-12 20:30:0.0'
 
 PREPARE delete_reminder_for_task(id_domain, time_setting_domain) AS
   DELETE FROM reminder WHERE id = $1 AND time = $2;
--- Not tested yet --
 
 
 
@@ -142,14 +139,12 @@ EXECUTE edit_shared_list_with_user('mohammad.alamy@gmail.com', 'aliasgarikh@yaho
 
 PREPARE remove_user_from_list(email_domain, email_domain, path_domain) AS
   DELETE FROM sharedfolders WHERE user_email = $1 AND owner_email = $2 AND path = $3;
--- Not tested yet --
 
 
 
 PREPARE assign_task_to_user(id_domain, email_domain) AS
   UPDATE task SET assigned_user_email = $2 WHERE id = $1;
 -- Tests --
--- TODO: Adding Trigger to check that the change is made by admin or owner(maybe in application level) --
 EXECUTE create_task_in_list('aliasgarikh@yahoo.com', '/University/Semester4/DB', 'Project',
                             TRUE, 'Course Project', '2017-07-09 20:29:22.743437',
                             '2017-07-09 22:29:22.743437', '2:00:00', '3:00:00',
@@ -161,12 +156,12 @@ EXECUTE assign_task_to_user(2,'mohammad.alamy@gmail.com');
 PREPARE begin_task(id_domain) AS
   UPDATE task SET real_time = current_timestamp WHERE id = $1;
 
--- TODO: Check the user beginning task is the user that task is assigned to --
+
 
 PREPARE end_task(id_domain) AS
   UPDATE task SET real_duration = current_timestamp - real_time WHERE id = $1;
 
--- TODO: Check the user ending task is the user that task is assigned to --
+
 
 -- Tests --
 EXECUTE create_task_in_list('aliasgarikh@yahoo.com', '/University/Semester4/DB', 'Assignment2',
@@ -180,9 +175,9 @@ EXECUTE end_task(3);
 PREPARE write_comment_under_task(id_domain, text_domain, email_domain, time_setting_domain, email_domain) AS
   INSERT INTO comment VALUES($2, current_timestamp, $3, $1, $4, $5);
 -- Tests --
-EXECUTE write_comment_under_task(3, 'Covfefe', current_timestamp, 'mohammad.alamy@gmail.com', NULL, NULL);
+EXECUTE write_comment_under_task(3, 'Covfefe', 'mohammad.alamy@gmail.com', NULL, NULL);
 
--- TODO: Check that only users can write comments that are either owner or shared with list. --
+
 
 PREPARE edit_comment_under_task(id_domain, time_setting_domain, text_domain, email_domain, time_setting_domain, email_domain) AS
   UPDATE comment SET text = $3, time = current_timestamp, email = $4, replied_to_time = $5, replied_to_email = $6
@@ -190,13 +185,12 @@ PREPARE edit_comment_under_task(id_domain, time_setting_domain, text_domain, ema
 -- Tests --
 EXECUTE edit_comment_under_task(3,'2017-07-09 22:58:03.238175', '???', 'mohammad.alamy@gmail.com', NULL, NULL );
 
--- TODO: Check that the person which is editing comment is the person who wrote it --
+
 
 PREPARE delete_comment_under_task(id_domain, time_setting_domain) AS
   DELETE FROM comment WHERE id = $1 AND time = $2;
--- Not tested yet --
 
--- TODO: Check that the person which is deleting comment is the person who wrote it or admin or owner --
+
 
 PREPARE add_resource_for_task(id_domain, resource_url_domain) AS
   INSERT INTO resourceurls VALUES ($1, $2);
@@ -230,10 +224,12 @@ PREPARE get_tasks_of_a_list(email_domain, path_domain) AS
 
 
 
-PREPARE get_tasks_with_tag(label_domain) AS
-  SELECT * FROM task AS t1
-    WHERE exists(SELECT * FROM tasktags AS t2
-                  WHERE t2.id = t1.id AND tag = $1);
+PREPARE get_tasks_with_tag(email_domain, label_domain) AS
+  SELECT * FROM task AS t
+    WHERE exists(SELECT * FROM tasktags AS tt
+                  WHERE tt.id = t.id AND tag = $2)
+    AND (email = $1 OR exists(SELECT * FROM sharedfolders as sf
+          WHERE user_email = $1 AND sf.owner_email = t.email AND sf.path = t.path));
 
 
 
@@ -272,7 +268,6 @@ PREPARE get_activity_of_shared_lists(email_domain) AS
       SELECT path FROM sharedfolders
         WHERE user_email = $1 OR owner_email = $1
     );
--- TODO: Create a trigger to record user activities in folders --
 
 
 
@@ -397,7 +392,7 @@ PREPARE get_total_duration_for_a_tag_in_an_interval(email_domain, label_domain, 
 PREPARE get_total_real_duration_for_a_folder_in_an_interval(email_domain, path_domain, time_setting_domain, time_setting_domain) AS
   SELECT sum(real_duration) FROM task
     WHERE email = $1 AND path LIKE $2 || '%' AND predicted_time BETWEEN $3 AND $4;
--- TODO: check that the input interval is in past, because we are calculating real time. also for the two next queries --
+
 
 PREPARE get_total_duration_for_a_list_in_an_interval(email_domain, path_domain, time_setting_domain, time_setting_domain) AS
   SELECT sum(real_duration) FROM task
@@ -439,7 +434,7 @@ PREPARE get_user_free_time_in_interval(email_domain, time_setting_domain, time_s
     SELECT extract(HOUR FROM sum(real_duration))/extract(HOUR FROM sum(predicted_duration)) FROM task
       WHERE real_duration IS NOT NULL AND predicted_duration IS NOT NULL AND assigned_user_email = $1
   ) FROM task WHERE predicted_time BETWEEN $2 AND $3 AND assigned_user_email = $1;
--- TODO: Make sure that the tasks in personal lists are assigned to owner when created --
+
 EXECUTE get_user_free_time_in_interval('mohammad.alamy@gmail.com', current_timestamp, current_timestamp + '0 years 0 mons 0 days 5 hours 0 mins 0.00 secs');
 
 
@@ -487,7 +482,6 @@ PREPARE get_functionality_of_tasks_in_a_folder(path_domain, email_domain) AS
 
 SELECT count(*) FROM "User"
   WHERE extract(date FROM last_activity) = extract(DATE FROM current_timestamp);
--- TODO: Updating user last_activity after all actions --
 
 PREPARE get_number_of_users_added_in_an_interval(time_setting_domain, time_setting_domain) AS
   SELECT count(email) FROM "User"
@@ -554,3 +548,32 @@ EXECUTE create_reminder_for_task(5, '2018-01-01 20:00:0.0', TRUE, TRUE);
 EXECUTE create_folder_for_user('u1@m.c', '/Shared', NULL );
 SELECT create_list_for_user('u1@m.c', '/Shared', '/Shared/First');
 EXECUTE share_list_with_user('u2@m.c', 'u1@m.c', '/Shared/First', FALSE );
+EXECUTE create_task_in_list('u1@m.c', '/Shared/First', 'SharedTask1',
+                            FALSE , 'First shared task', '2018-02-01 20:30:0.0',
+                            NULL, '3:00:00', NULL ,
+                            '2018-02-03 20:30:0.0', NULL, NULL );
+EXECUTE create_task_in_list('u1@m.c', '/Shared/First', 'SharedTask2',
+                            FALSE , 'Second shared task', '2018-02-01 20:30:0.0',
+                            NULL, '4:00:00', NULL ,
+                            '2018-03-03 20:30:0.0', NULL, NULL );
+
+EXECUTE write_comment_under_task(10, '???', 'u1@m.c', NULL, NULL);
+EXECUTE write_comment_under_task(11, '!!!', 'u2@m.c', NULL, NULL);
+
+EXECUTE add_resource_for_task(3, 'FirstResourceURL');
+EXECUTE add_resource_for_task(4, 'SecondResourceURL');
+
+EXECUTE add_tag_for_task(5, 'T1');
+EXECUTE add_tag_for_task(5, 'T2');
+EXECUTE add_tag_for_task(10, 'T3');
+
+-- Checking trigger for preventing bad parent folder --
+EXECUTE create_folder_for_user('u1@m.c', '/Private', '/Public');
+-- Checking trigger for checking bad reminder times --
+EXECUTE create_reminder_for_task(11, '2016-01-01 20:00:0.0', TRUE, TRUE);
+EXECUTE create_reminder_for_task(11, '2018-02-03 20:30:00.0', TRUE, TRUE);
+-- Checking trigger for assigning personal tasks automatically --
+EXECUTE create_task_in_list('u1@m.c', '/Public/First', 'Task2',
+                            FALSE , 'Second task of first user', '2018-01-03 20:30:0.0',
+                            NULL, '5:00:00', NULL ,
+                            '2018-01-06 20:30:0.0', NULL, NULL );
