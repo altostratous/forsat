@@ -25,8 +25,8 @@ class User(models.Model):
         with connection.cursor() as cursor:
             try:
                 cursor.execute(
-                    'INSERT INTO "User" (email, nickname, password, pic_url, last_activity) '
-                    'VALUES (%s, %s, %s, %s, current_timestamp);',
+                    'INSERT INTO "User" (email, nickname, password, pic_url, last_activity, registration_time) '
+                    'VALUES (%s, %s, %s, %s, current_timestamp, current_timestamp);',
                     [self.email, self.nickname, self.password, self.pic_url]
                 )
                 return True
