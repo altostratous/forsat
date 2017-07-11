@@ -10,7 +10,12 @@ from tasks.models import Task
 def register(request):
     if request.method == 'POST':
         form = UserForm(request.POST)
-        user = form.save(commit=False)
+        try:
+            user = form.save(commit=False)
+        except ValueError:
+            request.message = 'There\'s a problem with the information. May be the ' \
+                              'email is taken or password is not strong enough.'
+            return render(request, 'form.html', {'form': form, 'message': request.message, 'form_action': '/main/register'})
         raw_password = user.password
         user.password = User.hash(user.password)
         if user.save():
@@ -42,7 +47,9 @@ def panel(request):
     for task in today_tasks:
         print(task)
     return render(request, 'main/panel.html',
-                  {'message': message, 'today_tasks': today_tasks})
+                  {'message': message,
+                   'today_tasks': today_tasks,
+                   'starred_tasks': Task.get_starred_tasks(request.user.email)})
 
 
 def logout(request):

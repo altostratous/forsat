@@ -16,4 +16,7 @@ def create(request):
 
 
 def single(request, task_id):
-    return render(request, 'form.html', {'form': forms.TaskForm(instance=Task.get_single_task(task_id))})
+    if request.method == 'POST':
+        Task.update_task(task_id, forms.TaskForm(request.POST).save(commit=False))
+    return render(request, 'form.html', {'form': forms.TaskForm(instance=Task.get_single_task(task_id)),
+                                         'form_action': request.get_full_path()})

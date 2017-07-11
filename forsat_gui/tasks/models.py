@@ -37,8 +37,28 @@ class Task(models.Model):
         return tasks
 
     @staticmethod
+    def get_starred_tasks(email):
+        tasks = Task.objects.raw(
+            'SELECT * FROM task'
+            ' WHERE assigned_user_email = %s AND starred AND'
+            '  predicted_time BETWEEN current_date AND current_date + INTERVAL \'1 days\';', [email])
+        return tasks
+
+    @staticmethod
     def get_single_task(task_id):
         tasks = Task.objects.raw(
             'SELECT * FROM task'
             ' WHERE id = %s', [task_id])
         return tasks[0]
+
+    @staticmethod
+    def update_task(task_id, task):
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'UPDATE task SET title = %s, description = %s, deadline = %s, starred = %s, predicted_time = %s,'
+                ' predicted_duration = %s, real_time = %s, real_duration = %s, path = %s, assigned_user_email = %s'
+                ' WHERE id = %s',
+                [task.title, task.description, task.deadline, task.starred, task.predicted_time, task.predicted_duration, task.real_time, task.real_duration,
+                 task.path, task.assigned_user_email, task_id])
+        return

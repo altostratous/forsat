@@ -98,10 +98,10 @@ $$ LANGUAGE plpgsql;
 -- DROP TRIGGER task_assignment_validity ON task
 -- DROP TRIGGER task_assignment_update_validity ON task
 -- DROP FUNCTION check_task_availability()
-CREATE TRIGGER task_assignment_validity
-  BEFORE INSERT ON task
-  FOR EACH ROW
-  EXECUTE PROCEDURE check_task_availability();
+-- CREATE TRIGGER task_assignment_validity
+--   BEFORE INSERT ON task
+--   FOR EACH ROW
+--   EXECUTE PROCEDURE check_task_availability();
 
 CREATE TRIGGER task_assignment_update_validity
   BEFORE UPDATE OF assigned_user_email ON task
