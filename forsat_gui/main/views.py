@@ -3,6 +3,7 @@ from main.forms import UserForm
 from main.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 
 from tasks.models import Task
 
@@ -38,6 +39,8 @@ def register(request):
 
 
 def panel(request):
+    if not hasattr(request.user, 'email'):
+        return redirect('login')
     if hasattr(request, 'message'):
         message = request.message
     else:
