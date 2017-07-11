@@ -9,6 +9,19 @@ class Folder(models.Model):
     child_of_path = models.CharField(max_length=8192)
 
 
+class SubTask(models.Model):
+    task_id = models.IntegerField()
+    title = models.CharField(max_length=8192)
+    starred = models.BooleanField()
+
+
+class Reminder(models.Model):
+    time = models.DateTimeField()
+    task_id = models.IntegerField()
+    send_email = models.BooleanField()
+    notify = models.BooleanField()
+
+
 class Task(models.Model):
     id = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=8192)
@@ -52,6 +65,20 @@ class Task(models.Model):
         return tasks
 
     @staticmethod
+    def get_subtasks(task_id):
+        tasks = SubTask.objects.raw(
+            'SELECT id as task_id, * FROM subtask'
+            ' WHERE id = %s;', [task_id])
+        return tasks
+
+    @staticmethod
+    def get_reminders(task_id):
+        reminders = Reminder.objects.raw(
+            'SELECT id as task_id, * FROM reminder'
+            ' WHERE id = %s;', [task_id])
+        return reminders
+
+    @staticmethod
     def get_single_task(task_id):
         tasks = Task.objects.raw(
             'SELECT * FROM task'
@@ -70,7 +97,8 @@ class Task(models.Model):
                 'UPDATE task SET title = %s, description = %s, deadline = %s, starred = %s, predicted_time = %s,'
                 ' predicted_duration = %s, real_time = %s, real_duration = %s, path = %s, assigned_user_email = %s'
                 ' WHERE id = %s',
-                [task.title, task.description, task.deadline, task.starred, task.predicted_time, task.predicted_duration, task.real_time, task.real_duration,
+                [task.title, task.description, task.deadline, task.starred, task.predicted_time,
+                 task.predicted_duration, task.real_time, task.real_duration,
                  task.path, task.assigned_user_email, task_id])
         return
 

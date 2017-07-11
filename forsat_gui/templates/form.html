@@ -6,4 +6,32 @@
         {{ form }}
         <input type="submit" value="Submit" />
     </form>
+    {% if subtasks %}
+        <h4>Subtasks:</h4>
+
+        <table>
+            <thead>
+                <th>Title</th>
+                <th>Done</th>
+            </thead>
+        {% for subtask in subtasks %}
+            <tr><td>{{ subtask.title }}</td><td>{{ subtask.done }}</td></tr>
+        {% endfor %}
+        </table>
+    {% endif %}
+
+    {% if reminders %}
+        <h4>Reminders:</h4>
+
+        <table>
+            <thead>
+                <th>Time</th>
+                <th>Notify</th>
+                <th>Send Email</th>
+            </thead>
+        {% for reminder in reminders %}
+            <tr><td>{{ reminder.time }}</td><td>{{ reminder.notify }}</td><td>{{ reminder.send_email }}</td></tr>
+        {% endfor %}
+        </table>
+    {% endif %}
 {% endblock %}
