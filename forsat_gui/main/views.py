@@ -49,7 +49,9 @@ def panel(request):
     return render(request, 'main/panel.html',
                   {'message': message,
                    'today_tasks': today_tasks,
-                   'starred_tasks': Task.get_starred_tasks(request.user.email)})
+                   'starred_tasks': Task.get_starred_tasks(request.user.email),
+                   'archived_tasks': Task.get_archived_tasks(request.user.email),
+                   'hours_worked': Task.get_hours_worked(request.user.email)})
 
 
 def logout(request):

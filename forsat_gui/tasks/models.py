@@ -45,6 +45,13 @@ class Task(models.Model):
         return tasks
 
     @staticmethod
+    def get_archived_tasks(email):
+        tasks = Task.objects.raw(
+            'SELECT * FROM task'
+            ' WHERE assigned_user_email = %s AND real_duration IS NOT NULL;', [email])
+        return tasks
+
+    @staticmethod
     def get_single_task(task_id):
         tasks = Task.objects.raw(
             'SELECT * FROM task'
@@ -54,6 +61,10 @@ class Task(models.Model):
     @staticmethod
     def update_task(task_id, task):
         from django.db import connection
+        if task.predicted_duration is not None:
+            task.predicted_duration = None  # 'INTERVAL\'' + task.predicted_duration.__str__() + ' hour\''
+        if task.real_duration is not None:
+            task.real_duration = None  # 'INTERVAL\'' + task.real_duration.__str__() + ' hour\''
         with connection.cursor() as cursor:
             cursor.execute(
                 'UPDATE task SET title = %s, description = %s, deadline = %s, starred = %s, predicted_time = %s,'
@@ -62,3 +73,12 @@ class Task(models.Model):
                 [task.title, task.description, task.deadline, task.starred, task.predicted_time, task.predicted_duration, task.real_time, task.real_duration,
                  task.path, task.assigned_user_email, task_id])
         return
+
+    @staticmethod
+    def get_hours_worked(email):
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'SElECT extract(HOUR FROM sum(real_duration)) FROM task WHERE assigned_user_email = %s',
+                [email])
+            return [row[0] for row in cursor.fetchall()][0]
